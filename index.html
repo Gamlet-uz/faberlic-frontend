@@ -146,6 +146,37 @@
 
         /* ADMIN SETTINGS SECTION */
         .settings-section-title { font-size: 13px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 8px 0; padding-bottom: 6px; border-bottom: 2px solid #f3e0ef; }
+
+        /* ADMIN SELECTION MODE BAR */
+        .admin-select-bar { position: sticky; top: 0; z-index: 100; background: var(--brand); color: white; padding: 10px 15px; display: none; flex-direction: column; gap: 8px; border-radius: 0 0 18px 18px; box-shadow: 0 6px 20px rgba(139,26,107,0.4); }
+        .admin-select-bar.show { display: flex; }
+        .admin-select-bar .asb-row { display: flex; justify-content: space-between; align-items: center; }
+        .admin-select-bar .asb-title { font-weight: 800; font-size: 15px; }
+        .admin-select-bar .asb-hint { font-size: 12px; opacity: 0.85; margin-bottom: 2px; }
+        .admin-select-bar .asb-cats { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+        .admin-select-bar .asb-cats::-webkit-scrollbar { display: none; }
+        .asb-cat-btn { background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.4); color: white; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background 0.15s; }
+        .asb-cat-btn:active { background: rgba(255,255,255,0.45); }
+        .asb-cancel-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 7px 14px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
+
+        /* PRODUCT CARD SELECTION */
+        .products-grid.selection-active .product-card { cursor: pointer; }
+        .product-card { position: relative; }
+        .product-card .select-check { display: none; position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid var(--brand); background: white; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: var(--brand); z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: background 0.15s, color 0.15s; }
+        .products-grid.selection-active .product-card .select-check { display: flex; }
+        .product-card.p-selected { outline: 3px solid var(--brand); background: #fdf0fa; border-radius: 16px; }
+        .product-card.p-selected .select-check { background: var(--brand); color: white; border-color: var(--brand); }
+
+        /* MULTI-CAT CHECKBOXES IN FORM */
+        .cats-check-wrap { border: 1.5px solid #ddd; border-radius: 12px; padding: 8px 12px; margin: 8px 0; background: #fafafa; max-height: 165px; overflow-y: auto; }
+        .cats-check-label { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; border-bottom: 1px solid #f0f0f0; font-size: 15px; user-select: none; }
+        .cats-check-label:last-child { border: none; }
+        .cats-check-label input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--brand); cursor: pointer; flex-shrink: 0; }
+        .cats-check-wrap:empty::before { content: 'Avval kategoriya qo\02018oshing'; color: var(--gray); font-size: 13px; }
+
+        /* LONG PRESS FEEDBACK */
+        @keyframes lp-pulse { 0%{transform:scale(1)} 50%{transform:scale(0.96)} 100%{transform:scale(1)} }
+        .lp-active { animation: lp-pulse 0.5s ease; }
     </style>
 </head>
 <body>
@@ -163,6 +194,15 @@
 
         <div id="menu-view" class="view active">
             <div class="cats-wrapper" id="cats-container" style="margin: -15px -15px 15px -15px;"></div>
+            <!-- ADMIN: Mahsulot tanlash va kategoriyaga qoshish paneli -->
+            <div class="admin-select-bar" id="admin-select-bar">
+                <div class="asb-row">
+                    <span class="asb-title" id="asb-title">0 ta tanlandi</span>
+                    <button class="asb-cancel-btn" onclick="exitSelectionMode()">Bekor</button>
+                </div>
+                <div class="asb-hint">Kategoriya tanlang - tanlangan mahsulotlar qoshiladi</div>
+                <div class="asb-cats" id="asb-cats"></div>
+            </div>
             <div id="products-list" class="products-grid"></div>
         </div>
 
@@ -362,8 +402,11 @@
                 <input type="text" id="ap-name" class="input-style" placeholder="Nomi">
                 <input type="number" id="ap-price" class="input-style" placeholder="Narxi (so'm)">
                 <input type="text" id="ap-count" class="input-style" placeholder="Soni (Cheksiz uchun # qoldiring)">
-                <select id="ap-cat" class="input-style"></select>
-                <textarea id="ap-desc" class="input-style" placeholder="Tavsif..."></textarea>
+                <div style="margin: 8px 0;">
+                    <label style="font-weight:bold; color:var(--gray); display:block; margin-bottom:4px;">Kategoriyalar (bir yoki koʼproq tanlang)</label>
+                    <div id="ap-cats-container" class="cats-check-wrap"></div>
+                </div>
+                <textarea id="ap-desc" class="input-style" placeholder="Hajmi: "></textarea>
 
                 <label style="font-weight:bold; color:var(--gray); display:block; margin-top:5px;">Mahsulot rasmi</label>
                 <div class="img-upload-area" id="upload-area" onclick="document.getElementById('ap-img-file').click()">
@@ -449,6 +492,28 @@
         let globalSettings   = { minOrder: 0, feePercent: 3 };
         let sellerContact    = { phone: "", telegram: "", address: "" };
         let categorySortable = null;
+        let isAdmin          = false;
+        let selectionMode    = false;
+        let selectedProducts = new Set();
+
+        // ── LONG PRESS UTILITY ───────────────────────────────────────────
+        function addLongPress(el, callback, duration = 600) {
+            let timer;
+            const start = (e) => {
+                timer = setTimeout(() => {
+                    el.classList.add('lp-active');
+                    setTimeout(() => el.classList.remove('lp-active'), 300);
+                    callback();
+                }, duration);
+            };
+            const cancel = () => clearTimeout(timer);
+            el.addEventListener('touchstart', start, { passive: true });
+            el.addEventListener('touchend',   cancel);
+            el.addEventListener('touchmove',  cancel);
+            el.addEventListener('mousedown',  start);
+            el.addEventListener('mouseup',    cancel);
+            el.addEventListener('mouseleave', cancel);
+        }
 
         // ── IMGBB RASM YUKLASH ───────────────────────────────────────────
         const IMGBB_API_KEY = "b2d8a186f54db4ca35a446925ec3ebdf";
@@ -573,14 +638,44 @@
 
         function renderCategoriesUI() {
             const container = document.getElementById('cats-container');
+            const catsOnly  = categories.filter(c => c !== 'Hammasi');
+
             container.innerHTML = categories.map(cat =>
                 `<button class="cat-btn ${currentCat === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
             ).join('');
-            const select = document.getElementById('ap-cat');
-            const catsOnly = categories.filter(c => c !== 'Hammasi');
-            select.innerHTML = catsOnly.map(cat =>
-                `<option value="${cat}">${cat}</option>`
-            ).join('');
+
+            // Admin uchun: kategoriya tugmasiga uzoq bosish → tanlash rejimi
+            if (isAdmin) {
+                container.querySelectorAll('.cat-btn').forEach((btn, i) => {
+                    const cat = categories[i];
+                    if (cat === 'Hammasi') return;
+                    addLongPress(btn, () => {
+                        if (!selectionMode) enterSelectionMode(cat);
+                    }, 500);
+                });
+            }
+
+            // Mahsulot formi uchun ko'p kategoriya checkboxlari
+            const catsContainer = document.getElementById('ap-cats-container');
+            if (catsContainer) {
+                if (catsOnly.length === 0) {
+                    catsContainer.innerHTML = `<span style="color:var(--gray); font-size:13px;">Avval kategoriya qo'shing</span>`;
+                } else {
+                    catsContainer.innerHTML = catsOnly.map(cat => `
+                        <label class="cats-check-label">
+                            <input type="checkbox" class="ap-cat-cb" value="${cat}">
+                            <span>${cat}</span>
+                        </label>`).join('');
+                }
+            }
+
+            // Admin tanlash paneli uchun kategoriyalar
+            const asbCats = document.getElementById('asb-cats');
+            if (asbCats) {
+                asbCats.innerHTML = catsOnly.map(cat =>
+                    `<button class="asb-cat-btn" onclick="assignToCategory('${cat}')">${cat}</button>`
+                ).join('');
+            }
         }
 
         window.setCategory = (cat) => { currentCat = cat; renderCategoriesUI(); applyFilters(); };
@@ -589,25 +684,49 @@
         function applyFilters() {
             filteredProducts = products
                 .filter(p => {
-                    let matchCat    = currentCat === 'Hammasi' || p.cat === currentCat;
+                    // Ko'p kategoriya qo'llab-quvvatlash (cats array yoki eski cat string)
+                    let pCats    = p.cats || (p.cat ? [p.cat] : []);
+                    let matchCat = currentCat === 'Hammasi' || pCats.includes(currentCat);
                     let matchSearch = p.name.toLowerCase().includes(searchQuery);
                     return matchCat && matchSearch;
                 })
-                .sort((a, b) => Number(a.price) - Number(b.price)); // ← Narx bo'yicha o'sish tartibida
+                .sort((a, b) => Number(a.price) - Number(b.price));
             renderMenu();
         }
 
         window.renderMenu = () => {
             const list = document.getElementById('products-list');
+
             list.innerHTML = filteredProducts.map(p => {
                 const q        = cart[p.id]?.qty || 0;
                 let stockVal   = p.count || '#';
                 let isInfinity = stockVal === '#';
                 let stockNum   = isInfinity ? Infinity : Number(stockVal);
                 let isOut      = !isInfinity && stockNum <= 0;
+                let isSel      = selectedProducts.has(p.id);
 
+                // Tanlash rejimi (admin, kategoriyaga qo'shish)
+                if (selectionMode) {
+                    return `
+                    <div class="product-card ${isSel ? 'p-selected' : ''}" data-id="${p.id}"
+                         onclick="toggleProductSelect('${p.id}')"
+                         style="cursor:pointer;${isOut ? 'opacity:0.6;' : ''}">
+                        <div class="select-check">${isSel ? '✓' : ''}</div>
+                        <img src="${p.img || 'https://via.placeholder.com/300'}" style="pointer-events:none;" onerror="this.src='https://via.placeholder.com/300'">
+                        <div class="p-title">${p.name}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div class="p-price">${Number(p.price).toLocaleString()} so'm</div>
+                            <div class="p-stock" style="color:${isOut ? 'var(--red)' : 'var(--gray)'}">
+                                ${isOut ? 'Tugagan' : (isInfinity ? '∞' : stockNum + ' ta')}
+                            </div>
+                        </div>
+                    </div>`;
+                }
+
+                // Oddiy rejim
                 return `
-                <div class="product-card" style="${isOut ? 'opacity:0.6;' : ''}">
+                <div class="product-card" data-id="${p.id}" style="${isOut ? 'opacity:0.6;' : ''}">
+                    <div class="select-check"></div>
                     <img src="${p.img || 'https://via.placeholder.com/300'}" onclick="openProductModal('${p.id}')" onerror="this.src='https://via.placeholder.com/300'">
                     <div class="p-title">${p.name}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -624,6 +743,18 @@
                     }
                 </div>`;
             }).join('');
+
+            // Admin uchun: mahsulot ustiga uzoq bosish → tahrirlash
+            if (isAdmin && !selectionMode) {
+                list.querySelectorAll('.product-card').forEach(card => {
+                    const pid = card.dataset.id;
+                    addLongPress(card, () => {
+                        document.getElementById('admin-panel-modal').style.display = 'block';
+                        editProduct(pid);
+                    }, 600);
+                });
+            }
+
             updateBadge();
         };
 
@@ -648,6 +779,66 @@
             badge.style.display = count > 0 ? 'flex' : 'none';
             badge.innerText = count;
         }
+
+        // ── ADMIN: TANLASH REJIMI (SELECTION MODE) ───────────────────────
+        window.enterSelectionMode = (catContext) => {
+            selectionMode = true;
+            selectedProducts.clear();
+            const bar  = document.getElementById('admin-select-bar');
+            const grid = document.getElementById('products-list');
+            bar.classList.add('show');
+            grid.classList.add('selection-active');
+            // Barcha mahsulotlarni ko'rsatish (filter emas)
+            if (currentCat !== 'Hammasi') {
+                currentCat = 'Hammasi';
+                renderCategoriesUI();
+            }
+            updateSelectionBar();
+            renderMenu();
+        };
+
+        window.exitSelectionMode = () => {
+            selectionMode = false;
+            selectedProducts.clear();
+            document.getElementById('admin-select-bar').classList.remove('show');
+            document.getElementById('products-list').classList.remove('selection-active');
+            renderMenu();
+        };
+
+        window.toggleProductSelect = (id) => {
+            if (selectedProducts.has(id)) selectedProducts.delete(id);
+            else selectedProducts.add(id);
+            updateSelectionBar();
+            // Faqat shu kartani yangilash
+            const card = document.querySelector(`.product-card[data-id="${id}"]`);
+            if (card) {
+                card.classList.toggle('p-selected', selectedProducts.has(id));
+                const check = card.querySelector('.select-check');
+                if (check) check.textContent = selectedProducts.has(id) ? '✓' : '';
+            }
+        };
+
+        function updateSelectionBar() {
+            const n = selectedProducts.size;
+            document.getElementById('asb-title').textContent = n === 0
+                ? 'Mahsulot tanlanmagan'
+                : `${n} ta mahsulot tanlandi`;
+        }
+
+        window.assignToCategory = async (cat) => {
+            if (selectedProducts.size === 0) return tg.showAlert('Avval mahsulot tanlang!');
+            const ids = [...selectedProducts];
+            const updates = ids.map(async (id) => {
+                const p = products.find(x => x.id === id);
+                if (!p) return;
+                let pCats = p.cats || (p.cat ? [p.cat] : []);
+                if (!pCats.includes(cat)) pCats = [...pCats, cat];
+                await updateDoc(doc(db, 'products', id), { cats: pCats, cat: pCats[0] });
+            });
+            await Promise.all(updates);
+            tg.showAlert(`✅ ${ids.length} ta mahsulot "${cat}" kategoriyasiga qo'shildi!`);
+            exitSelectionMode();
+        };
 
         window.renderCart = () => {
             const container = document.getElementById('cart-items');
@@ -905,7 +1096,8 @@
 
         // ── ADMIN PANEL ──────────────────────────────────────────────────
         function checkAdmin() {
-            document.getElementById('btn-admin-panel').style.display = admins.includes(userId) ? 'block' : 'none';
+            isAdmin = admins.includes(userId);
+            document.getElementById('btn-admin-panel').style.display = isAdmin ? 'block' : 'none';
         }
         window.openAdminPanel = () => {
             document.getElementById('admin-panel-modal').style.display = 'block';
@@ -1047,6 +1239,10 @@
         // ── ADMIN MAHSULOTLAR (KATEGORIYA BO'YICHA GURUHLANGAN) ──────────
         function renderAdminProductItem(p) {
             let stock = (p.count || '#') === '#' ? '∞' : p.count + ' ta';
+            let pCats = p.cats || (p.cat ? [p.cat] : []);
+            let catsHtml = pCats.length > 1
+                ? `<div style="font-size:11px; color:var(--brand); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📁 ${pCats.join(' · ')}</div>`
+                : '';
             return `
             <div class="admin-card" style="display:flex; gap:10px; align-items:center;">
                 <img src="${p.img || 'https://via.placeholder.com/50'}" style="width:65px; height:65px; border-radius:10px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/50'">
@@ -1054,6 +1250,7 @@
                     <b style="display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</b>
                     <span style="color:var(--brand); font-weight:bold;">${Number(p.price).toLocaleString()} so'm</span>
                     <div style="font-size:12px; color:var(--gray);">Qoldiq: ${stock}</div>
+                    ${catsHtml}
                 </div>
                 <div style="display:flex; flex-direction:column; gap:5px; flex-shrink:0;">
                     <button style="background:#007aff; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;" onclick="editProduct('${p.id}')">✏️</button>
@@ -1069,15 +1266,19 @@
             if (products.length === 0) { list.innerHTML = "<p style='color:var(--gray); text-align:center;'>Mahsulot yo'q.</p>"; return; }
 
             let html = '';
-            let renderedIds = new Set();
+            let categorizedIds = new Set(); // kamida bir kategoriyaga tegishli mahsulotlar
 
             catsOnly.forEach((cat, idx) => {
+                // Ko'p kategoriya qo'llab-quvvatlash
                 let catProds = products
-                    .filter(p => p.cat === cat)
+                    .filter(p => {
+                        let pCats = p.cats || (p.cat ? [p.cat] : []);
+                        return pCats.includes(cat);
+                    })
                     .sort((a, b) => Number(a.price) - Number(b.price));
 
                 if (catProds.length === 0) return;
-                catProds.forEach(p => renderedIds.add(p.id));
+                catProds.forEach(p => categorizedIds.add(p.id));
 
                 let groupId = `catg-${idx}`;
                 html += `
@@ -1095,8 +1296,10 @@
                 </div>`;
             });
 
-            // Kategoriyasiz mahsulotlar
-            let others = products.filter(p => !renderedIds.has(p.id)).sort((a, b) => Number(a.price) - Number(b.price));
+            // Hech qanday kategoriyaga tegishli bo'lmagan mahsulotlar
+            let others = products
+                .filter(p => !categorizedIds.has(p.id))
+                .sort((a, b) => Number(a.price) - Number(b.price));
             if (others.length > 0) {
                 html += `
                 <div class="day-group" style="margin-bottom:12px;">
@@ -1121,12 +1324,16 @@
             let id       = document.getElementById('ap-id').value;
             let imgUrl   = document.getElementById('ap-img-url').value;
             let countVal = document.getElementById('ap-count').value.trim() || '#';
-            let data     = {
+            // Ko'p kategoriya: belgilangan checkboxlarni o'qish
+            let selectedCats = [...document.querySelectorAll('.ap-cat-cb:checked')].map(cb => cb.value);
+            if (selectedCats.length === 0) return tg.showAlert("Kamida bitta kategoriya tanlang!");
+            let data = {
                 name:  document.getElementById('ap-name').value,
                 price: Number(document.getElementById('ap-price').value),
                 count: countVal,
                 img:   imgUrl,
-                cat:   document.getElementById('ap-cat').value,
+                cats:  selectedCats,
+                cat:   selectedCats[0],   // orqaga moslik uchun
                 desc:  document.getElementById('ap-desc').value
             };
             if (!data.name || !data.price) return tg.showAlert("Ma'lumot to'liq emas");
@@ -1138,15 +1345,23 @@
 
         window.editProduct = (id) => {
             let p = products.find(x => x.id === id); if (!p) return;
-            document.getElementById('ap-id').value    = p.id;
-            document.getElementById('ap-name').value  = p.name;
-            document.getElementById('ap-price').value = p.price;
-            document.getElementById('ap-count').value = p.count || '#';
+            // Avval formni ochish (reset bo'ladi), so'ng ma'lumot to'ldirish
+            openAdminView('admin-add-prod');
+            document.getElementById('ap-id').value      = p.id;
+            document.getElementById('ap-name').value    = p.name;
+            document.getElementById('ap-price').value   = p.price;
+            document.getElementById('ap-count').value   = p.count || '#';
             document.getElementById('ap-img-url').value = p.img || '';
-            document.getElementById('ap-cat').value   = p.cat;
-            document.getElementById('ap-desc').value  = p.desc || "";
+            document.getElementById('ap-desc').value    = p.desc || '';
             document.getElementById('form-title').innerText = "Mahsulotni tahrirlash";
 
+            // Ko'p kategoriya checkboxlarini belgilash
+            let pCats = p.cats || (p.cat ? [p.cat] : []);
+            document.querySelectorAll('.ap-cat-cb').forEach(cb => {
+                cb.checked = pCats.includes(cb.value);
+            });
+
+            // Rasm preview
             if (p.img) {
                 const preview = document.getElementById('ap-img-preview');
                 preview.src = p.img;
@@ -1155,17 +1370,18 @@
                 area.innerHTML = `<input type="file" id="ap-img-file" accept="image/*" style="display:none;" onchange="handleImageUpload(this)"><div class="upload-icon">🔄</div><div class="upload-text">Rasmni almashtirish uchun bosing</div>`;
                 area.onclick = () => document.getElementById('ap-img-file').click();
             }
-            openAdminView('admin-add-prod');
         };
 
         window.resetAdminForm = () => {
-            document.getElementById('ap-id').value    = "";
-            document.getElementById('ap-name').value  = "";
-            document.getElementById('ap-price').value = "";
-            document.getElementById('ap-count').value = "";
+            document.getElementById('ap-id').value      = "";
+            document.getElementById('ap-name').value    = "";
+            document.getElementById('ap-price').value   = "";
+            document.getElementById('ap-count').value   = "";
             document.getElementById('ap-img-url').value = "";
-            document.getElementById('ap-desc').value  = "";
+            document.getElementById('ap-desc').value    = "";
             document.getElementById('form-title').innerText = "Yangi mahsulot";
+            // Barcha kategoriya checkboxlarini olib tashlash
+            document.querySelectorAll('.ap-cat-cb').forEach(cb => cb.checked = false);
             resetAdminFormUI();
         };
 
