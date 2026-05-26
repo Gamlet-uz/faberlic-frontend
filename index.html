@@ -174,6 +174,27 @@
         .cats-check-label input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--brand); cursor: pointer; flex-shrink: 0; }
         .cats-check-wrap:empty::before { content: 'Avval kategoriya qo\02018oshing'; color: var(--gray); font-size: 13px; }
 
+        /* FABERLIC IMPORT */
+        .method-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .method-tab  { flex: 1; padding: 11px 8px; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .method-tab.active   { background: var(--brand); color: white; }
+        .method-tab.inactive { background: #e0e0e0; color: #555; }
+
+        .import-info-box { background: #f3e0ef; border-radius: 12px; padding: 12px 15px; margin-bottom: 14px; font-size: 13px; color: #5a0d48; line-height: 1.5; }
+        .import-info-box code { background: rgba(255,255,255,0.6); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+        textarea#import-codes { height: 120px; font-family: monospace; font-size: 14px; letter-spacing: 0.5px; }
+
+        .irc-wrap { margin-top: 12px; }
+        .irc-card { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; gap: 12px; align-items: center; }
+        .irc-card.ok  { border-left: 4px solid #28a745; }
+        .irc-card.err { border-left: 4px solid var(--red); }
+        .irc-card img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
+        .irc-info {}
+        .irc-name  { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+        .irc-price { color: var(--brand); font-weight: 800; font-size: 13px; margin-bottom: 2px; }
+        .irc-meta  { font-size: 11px; color: var(--gray); }
+
         /* LONG PRESS FEEDBACK */
         @keyframes lp-pulse { 0%{transform:scale(1)} 50%{transform:scale(0.96)} 100%{transform:scale(1)} }
         .lp-active { animation: lp-pulse 0.5s ease; }
@@ -394,31 +415,60 @@
                 <div id="admin-products-list"></div>
             </div>
 
-            <!-- YANGI MAHSULOT QO'SHISH -->
+            <!-- YANGI MAHSULOT QO'SHISH (TABLAR) -->
             <div id="admin-add-prod" class="admin-section" style="display:none;">
-                <h3 id="form-title">Yangi mahsulot</h3>
-                <input type="hidden" id="ap-id">
-                <input type="hidden" id="ap-img-url">
-                <input type="text" id="ap-name" class="input-style" placeholder="Nomi">
-                <input type="number" id="ap-price" class="input-style" placeholder="Narxi (so'm)">
-                <input type="text" id="ap-count" class="input-style" placeholder="Soni (Cheksiz uchun # qoldiring)">
-                <div style="margin: 8px 0;">
-                    <label style="font-weight:bold; color:var(--gray); display:block; margin-bottom:4px;">Kategoriyalar (bir yoki koʼproq tanlang)</label>
-                    <div id="ap-cats-container" class="cats-check-wrap"></div>
-                </div>
-                <textarea id="ap-desc" class="input-style" placeholder="Hajmi: "></textarea>
+                <h3 id="form-title" style="margin-top:0;">Mahsulot qo'shish</h3>
 
-                <label style="font-weight:bold; color:var(--gray); display:block; margin-top:5px;">Mahsulot rasmi</label>
-                <div class="img-upload-area" id="upload-area" onclick="document.getElementById('ap-img-file').click()">
-                    <input type="file" id="ap-img-file" accept="image/*" style="display:none;" onchange="handleImageUpload(this)">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Galereyadan rasm tanlash</div>
+                <!-- Usul tanlash -->
+                <div class="method-tabs">
+                    <button id="btn-method-manual" class="method-tab active" onclick="switchAddMethod('manual')">✍️ Qo'lda</button>
+                    <button id="btn-method-code"   class="method-tab inactive" onclick="switchAddMethod('code')">🔢 Kod orqali</button>
                 </div>
-                <div class="img-upload-spinner" id="upload-spinner">⏳ Yuklanmoqda...</div>
-                <img id="ap-img-preview" class="img-preview" src="" alt="Preview">
 
-                <button class="main-btn" onclick="saveProduct()">Saqlash</button>
-                <button class="danger-btn" style="background:#8e8e93;" onclick="resetAdminForm()">Bekor qilish</button>
+                <!-- ── QO'LDA KIRITISH ── -->
+                <div id="add-manual-section">
+                    <input type="hidden" id="ap-id">
+                    <input type="hidden" id="ap-img-url">
+                    <input type="text"   id="ap-name"  class="input-style" placeholder="Nomi">
+                    <input type="number" id="ap-price" class="input-style" placeholder="Narxi (so'm)">
+                    <input type="text"   id="ap-count" class="input-style" placeholder="Soni (Cheksiz uchun # qoldiring)">
+                    <div style="margin: 8px 0;">
+                        <label style="font-weight:bold; color:var(--gray); display:block; margin-bottom:4px;">Kategoriyalar (bir yoki koʼproq tanlang)</label>
+                        <div id="ap-cats-container" class="cats-check-wrap"></div>
+                    </div>
+                    <textarea id="ap-desc" class="input-style" placeholder="Hajmi: "></textarea>
+
+                    <label style="font-weight:bold; color:var(--gray); display:block; margin-top:5px;">Mahsulot rasmi</label>
+                    <div class="img-upload-area" id="upload-area" onclick="document.getElementById('ap-img-file').click()">
+                        <input type="file" id="ap-img-file" accept="image/*" style="display:none;" onchange="handleImageUpload(this)">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Galereyadan rasm tanlash</div>
+                    </div>
+                    <div class="img-upload-spinner" id="upload-spinner">⏳ Yuklanmoqda...</div>
+                    <img id="ap-img-preview" class="img-preview" src="" alt="Preview">
+
+                    <button class="main-btn" onclick="saveProduct()">Saqlash</button>
+                    <button class="danger-btn" style="background:#8e8e93;" onclick="resetAdminForm()">Bekor qilish</button>
+                </div>
+
+                <!-- ── FABERLIC KOD ORQALI ── -->
+                <div id="add-code-section" style="display:none;">
+                    <div class="import-info-box">
+                        📌 <b>Faberlic mahsulot kodini</b> qanday topish mumkin?<br>
+                        Faberlic saytida mahsulot sahifasini oching.<br>
+                        URL manzilidan kodini oling:<br>
+                        <code>faberlic.com/.../<b>010501-035714</b></code><br><br>
+                        Bir nechta kod — har birini yangi qatorga yozing.
+                    </div>
+
+                    <textarea id="import-codes" class="input-style" placeholder="010501-035714&#10;010502-00038&#10;010503-00126"></textarea>
+
+                    <button id="btn-fetch-codes" class="main-btn" onclick="fetchByCode()" style="margin-top:8px;">🔍 Yuklab olish</button>
+
+                    <div id="import-results" class="irc-wrap"></div>
+
+                    <button id="btn-save-imported" class="main-btn" onclick="saveImportedProducts()" style="display:none; background:#28a745; margin-top:4px;">💾 Saqlash</button>
+                </div>
             </div>
 
             <!-- KATEGORIYALAR -->
@@ -1347,6 +1397,7 @@
             let p = products.find(x => x.id === id); if (!p) return;
             // Avval formni ochish (reset bo'ladi), so'ng ma'lumot to'ldirish
             openAdminView('admin-add-prod');
+            switchAddMethod('manual');   // har doim qo'lda tab
             document.getElementById('ap-id').value      = p.id;
             document.getElementById('ap-name').value    = p.name;
             document.getElementById('ap-price').value   = p.price;
@@ -1382,6 +1433,12 @@
             document.getElementById('form-title').innerText = "Yangi mahsulot";
             // Barcha kategoriya checkboxlarini olib tashlash
             document.querySelectorAll('.ap-cat-cb').forEach(cb => cb.checked = false);
+            // Import tabni ham tozalash va manual rejimga qaytish
+            switchAddMethod('manual');
+            document.getElementById('import-codes').value    = '';
+            document.getElementById('import-results').innerHTML = '';
+            document.getElementById('btn-save-imported').style.display = 'none';
+            importedProducts = [];
             resetAdminFormUI();
         };
 
@@ -1473,6 +1530,142 @@
             document.getElementById(tabId + '-view').classList.add('active');
             document.getElementById('main-header').style.display = (tabId === 'menu') ? 'flex' : 'none';
             if (tabId === 'cart') renderCart();
+        };
+
+        // ── FABERLIC KOD ORQALI IMPORT ───────────────────────────────────
+        let importedProducts = [];
+
+        const FABERLIC_API_BASE   = "https://faberlic.com/flecom/api/v1/products";
+        const FABERLIC_API_PARAMS = "baseStore=UZB_9300&priceGroup=PRIV&nextPeriodPriceEnabled=false&language=uz";
+        const FABERLIC_IMG_BASE   = "https://faberlic.com/medias/";
+
+        function stripHtmlImport(html) {
+            if (!html) return '';
+            return html
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/<\/p>/gi, '\n')
+                .replace(/<\/li>/gi, '\n')
+                .replace(/<li>/gi, '• ')
+                .replace(/<[^>]*>/g, '')
+                .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
+        }
+
+        window.switchAddMethod = (method) => {
+            const isManual = method === 'manual';
+            document.getElementById('add-manual-section').style.display = isManual ? 'block' : 'none';
+            document.getElementById('add-code-section').style.display   = isManual ? 'none'  : 'block';
+            document.getElementById('btn-method-manual').className = 'method-tab ' + (isManual ? 'active' : 'inactive');
+            document.getElementById('btn-method-code').className   = 'method-tab ' + (isManual ? 'inactive' : 'active');
+            if (isManual) document.getElementById('form-title').innerText = 'Yangi mahsulot';
+            else          document.getElementById('form-title').innerText = 'Faberlic import';
+        };
+
+        window.fetchByCode = async () => {
+            const codesText = document.getElementById('import-codes').value.trim();
+            const codes = codesText.split(/[\n,;]+/).map(c => c.trim()).filter(Boolean);
+
+            if (!codes.length) { tg.showAlert("Kamida bitta kod kiriting!"); return; }
+
+            const btn        = document.getElementById('btn-fetch-codes');
+            const saveBtn    = document.getElementById('btn-save-imported');
+            const resultArea = document.getElementById('import-results');
+
+            btn.disabled    = true;
+            btn.textContent = '⏳ Yuklanmoqda...';
+            resultArea.innerHTML = '';
+            saveBtn.style.display = 'none';
+            importedProducts = [];
+
+            for (let i = 0; i < codes.length; i++) {
+                const code = codes[i];
+                btn.textContent = `⏳ ${i + 1}/${codes.length} yuklanmoqda...`;
+                try {
+                    const url  = `${FABERLIC_API_BASE}/${encodeURIComponent(code)}?${FABERLIC_API_PARAMS}`;
+                    const resp = await fetch(url);
+
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    const json = await resp.json();
+                    const data = json.data;
+                    if (!data) throw new Error("Ma'lumot topilmadi");
+
+                    const defaultImg = (data.img || []).find(i => i.isDefault) || (data.img || [])[0];
+                    const imgUrl     = defaultImg ? `${FABERLIC_IMG_BASE}${defaultImg.file}` : '';
+                    const appDesc    = stripHtmlImport(data.applicationModeDesc || '');
+                    const volume     = data.volume ? `Hajmi: ${data.volume}ml` : '';
+                    const desc       = [volume, appDesc].filter(Boolean).join('\n\n');
+
+                    const product = {
+                        name:    data.name || 'Nomsiz',
+                        img:     imgUrl,
+                        price:   data.catalogPrice || data.price || 0,
+                        count:   '#',
+                        cats:    [],
+                        cat:     '',
+                        desc:    desc,
+                        article: data.article || '',
+                        fabCode: data.code    || ''
+                    };
+
+                    importedProducts.push(product);
+
+                    resultArea.innerHTML += `
+                        <div class="irc-card ok">
+                            <img src="${imgUrl}" onerror="this.src='https://via.placeholder.com/64'" alt="">
+                            <div class="irc-info">
+                                <div class="irc-name">${data.name}</div>
+                                <div class="irc-price">${Number(data.catalogPrice).toLocaleString()} so'm</div>
+                                <div class="irc-meta">✅ Tayyor · Hajm: ${data.volume || '—'}ml · Kod: ${code}</div>
+                            </div>
+                        </div>`;
+                } catch (err) {
+                    let errMsg = err.message;
+                    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                        errMsg = "CORS xatosi. Telegram bot orqali /addproduct buyrug'ini ishlating.";
+                    }
+                    resultArea.innerHTML += `
+                        <div class="irc-card err">
+                            <div class="irc-info">
+                                <div class="irc-name" style="color:var(--red);">❌ Kod: ${code}</div>
+                                <div class="irc-meta">${errMsg}</div>
+                            </div>
+                        </div>`;
+                }
+
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            btn.disabled    = false;
+            btn.textContent = '🔍 Yuklab olish';
+
+            if (importedProducts.length > 0) {
+                saveBtn.style.display  = 'block';
+                saveBtn.textContent    = `💾 ${importedProducts.length} ta mahsulotni saqlash`;
+            }
+        };
+
+        window.saveImportedProducts = async () => {
+            if (!importedProducts.length) return;
+            const btn = document.getElementById('btn-save-imported');
+            btn.disabled    = true;
+            btn.textContent = '⏳ Saqlanmoqda...';
+
+            let saved = 0;
+            for (const product of importedProducts) {
+                try {
+                    await addDoc(collection(db, "products"), product);
+                    saved++;
+                } catch (err) {
+                    console.error("Saqlashda xatolik:", err);
+                }
+            }
+
+            importedProducts = [];
+            btn.style.display = 'none';
+            document.getElementById('import-codes').value  = '';
+            document.getElementById('import-results').innerHTML = '';
+            tg.showAlert(`✅ ${saved} ta mahsulot muvaffaqiyatli saqlandi!\n\nKategoriya belgilash uchun mahsulot ustiga uzoq bosing.`);
         };
 
         // ── MAHSULOT DETAIL MODALI ───────────────────────────────────────
