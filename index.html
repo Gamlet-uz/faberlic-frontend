@@ -80,7 +80,7 @@
         .pd-img { width: 100%; height: 270px; object-fit: cover; }
         .pd-content { padding: 20px; background: white; border-radius: 20px 20px 0 0; margin-top: -20px; position: relative; min-height: 50vh; }
         .pd-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .pd-desc { color: #666; line-height: 1.5; margin-top: 20px; font-size: 15px; }
+        .pd-desc { color: #666; line-height: 1.5; margin-top: 20px; font-size: 15px; white-space: pre-wrap; }
 
         /* CUSTOM CONFIRM */
         .confirm-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; justify-content: center; align-items: center; }
@@ -215,7 +215,6 @@
 
         <div id="menu-view" class="view active">
             <div class="cats-wrapper" id="cats-container" style="margin: -15px -15px 15px -15px;"></div>
-            <!-- ADMIN: Mahsulot tanlash va kategoriyaga qoshish paneli -->
             <div class="admin-select-bar" id="admin-select-bar">
                 <div class="asb-row">
                     <span class="asb-title" id="asb-title">0 ta tanlandi</span>
@@ -263,7 +262,6 @@
         <div class="nav-item" onclick="switchTab('profile', this)"><div class="icon">👤</div><b>Profil</b></div>
     </nav>
 
-    <!-- MAHSULOT DETAIL MODALI -->
     <div id="product-modal" class="full-modal">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('product-modal')">←</button>
@@ -283,7 +281,6 @@
         </div>
     </div>
 
-    <!-- BUYURTMA DETAIL MODALI -->
     <div id="order-detail-modal" class="full-modal" style="z-index: 9999;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('order-detail-modal')">←</button>
@@ -292,7 +289,6 @@
         <div style="padding: 15px;" id="od-content"></div>
     </div>
 
-    <!-- PROFIL TAHRIRLASH MODALI -->
     <div id="profile-edit-modal" class="full-modal" style="background: white;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('profile-edit-modal')">←</button>
@@ -309,7 +305,6 @@
         </div>
     </div>
 
-    <!-- BUYURTMA BERISH MODALI -->
     <div id="checkout-modal" class="full-modal" style="background: white;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('checkout-modal')">←</button>
@@ -324,7 +319,6 @@
         </div>
     </div>
 
-    <!-- SOTUVCHI BILAN BOG'LANISH MODALI -->
     <div id="seller-contact-modal" class="full-modal" style="background: white;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('seller-contact-modal')">←</button>
@@ -360,7 +354,6 @@
         </div>
     </div>
 
-    <!-- ADMIN PANEL MODALI -->
     <div id="admin-panel-modal" class="full-modal">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('admin-panel-modal')">←</button>
@@ -376,7 +369,6 @@
                 <div class="admin-card" style="text-align:center; cursor:pointer;" onclick="openAdminView('admin-settings')">⚙️ Sozlamalar</div>
             </div>
 
-            <!-- UMUMIY SOZLAMALAR -->
             <div id="admin-settings" class="admin-section" style="display:none;">
                 <h3 style="margin-top:0;">Umumiy Sozlamalar</h3>
 
@@ -397,7 +389,6 @@
                 <button class="main-btn" onclick="saveGlobalSettings()">💾 Saqlash</button>
             </div>
 
-            <!-- BUYURTMALAR -->
             <div id="admin-orders" class="admin-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h3 style="margin:0;">Kelib tushgan buyurtmalar</h3>
@@ -406,7 +397,6 @@
                 <div id="admin-orders-list"></div>
             </div>
 
-            <!-- MAHSULOTLAR (KATEGORIYA BO'YICHA) -->
             <div id="admin-prods" class="admin-section" style="display:none;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                     <h3 style="margin:0;">Mahsulotlar</h3>
@@ -415,28 +405,25 @@
                 <div id="admin-products-list"></div>
             </div>
 
-            <!-- YANGI MAHSULOT QO'SHISH (TABLAR) -->
             <div id="admin-add-prod" class="admin-section" style="display:none;">
                 <h3 id="form-title" style="margin-top:0;">Mahsulot qo'shish</h3>
 
-                <!-- Usul tanlash -->
                 <div class="method-tabs">
                     <button id="btn-method-manual" class="method-tab active" onclick="switchAddMethod('manual')">✍️ Qo'lda</button>
                     <button id="btn-method-code"   class="method-tab inactive" onclick="switchAddMethod('code')">🔢 Artikul orqali</button>
                 </div>
 
-                <!-- ── QO'LDA KIRITISH ── -->
                 <div id="add-manual-section">
                     <input type="hidden" id="ap-id">
                     <input type="hidden" id="ap-img-url">
-                    <input type="text"   id="ap-name"  class="input-style" placeholder="Nomi">
+                    <input type="text"   id="ap-name"  class="input-style" placeholder="Nomi (M: Atir. 3128)">
                     <input type="number" id="ap-price" class="input-style" placeholder="Narxi (so'm)">
                     <input type="text"   id="ap-count" class="input-style" placeholder="Soni (Cheksiz uchun # qoldiring)">
                     <div style="margin: 8px 0;">
                         <label style="font-weight:bold; color:var(--gray); display:block; margin-bottom:4px;">Kategoriyalar (bir yoki koʼproq tanlang)</label>
                         <div id="ap-cats-container" class="cats-check-wrap"></div>
                     </div>
-                    <textarea id="ap-desc" class="input-style" placeholder="Hajmi: "></textarea>
+                    <textarea id="ap-desc" class="input-style" placeholder="Hajmi: 50 ml.\nTavsifi: ..."></textarea>
 
                     <label style="font-weight:bold; color:var(--gray); display:block; margin-top:5px;">Mahsulot rasmi</label>
                     <div class="img-upload-area" id="upload-area" onclick="document.getElementById('ap-img-file').click()">
@@ -451,17 +438,16 @@
                     <button class="danger-btn" style="background:#8e8e93;" onclick="resetAdminForm()">Bekor qilish</button>
                 </div>
 
-                <!-- ── FABERLIC ARTIKUL ORQALI ── -->
                 <div id="add-code-section" style="display:none;">
                     <div class="import-info-box">
-                        📌 <b>Faberlic mahsulot artikulini</b> qanday topish mumkin?<br>
-                        Faberlic katalogini oching yoki mahsulot sahifasiga kiring.<br>
-                        U yerda mahsulot raqami ko'rsatilgan — mana shu raqam:<br>
-                        <code>3329</code> &nbsp; <code>3128</code> &nbsp; <code>3325</code><br><br>
-                        Bir nechta artikul — har birini yangi qatorga yozing.
+                        📌 <b>Faberlic mahsulot artikulini</b> kiriting.<br>
+                        Sizga kerakli mahsulot soni (artikuli).<br>
+                        Bir nechta artikul kiritmoqchi bo'lsangiz, har birini yangi qatorga yozing.
                     </div>
 
-                    <textarea id="import-codes" class="input-style" placeholder="3329&#10;3128&#10;3325"></textarea>
+                    <textarea id="import-codes" class="input-style" placeholder="3325
+3128
+3001"></textarea>
 
                     <button id="btn-fetch-codes" class="main-btn" onclick="fetchByCode()" style="margin-top:8px;">🔍 Yuklab olish</button>
 
@@ -471,7 +457,6 @@
                 </div>
             </div>
 
-            <!-- KATEGORIYALAR -->
             <div id="admin-cats" class="admin-section" style="display:none;">
                 <h3 style="margin-top:0;">Kategoriyalarni boshqarish</h3>
                 <p style="color:var(--gray); font-size:13px; margin-top:-5px;">☰ belgisini ushlab torting — ketma-ketlikni o'zgartirish mumkin</p>
@@ -482,7 +467,6 @@
                 <div id="admin-cats-list"></div>
             </div>
 
-            <!-- ADMINLAR -->
             <div id="admin-users" class="admin-section" style="display:none;">
                 <h3>Adminlar ro'yxati</h3>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -495,7 +479,6 @@
         </div>
     </div>
 
-    <!-- TASDIQLASH MODALI -->
     <div id="confirm-modal" class="confirm-overlay">
         <div class="confirm-box">
             <h3 id="confirm-title" style="margin-top:0;">Sarlavha</h3>
@@ -617,7 +600,6 @@
 
         // ── FIREBASE LISTENERS ───────────────────────────────────────────
 
-        // Umumiy sozlamalar
         onSnapshot(doc(db, "settings", "general"), (docSnap) => {
             if (docSnap.exists()) globalSettings = docSnap.data();
             else globalSettings = { minOrder: 50000, feePercent: 3 };
@@ -626,7 +608,6 @@
             renderCart();
         });
 
-        // Sotuvchi kontakt ma'lumotlari
         onSnapshot(doc(db, "settings", "contact"), (docSnap) => {
             if (docSnap.exists()) sellerContact = docSnap.data();
             else sellerContact = { phone: "", telegram: "", address: "" };
@@ -636,7 +617,6 @@
             updateSellerContactModal();
         });
 
-        // Kategoriyalar
         onSnapshot(doc(db, "settings", "categories"), (docSnap) => {
             if (docSnap.exists()) categories = ["Hammasi", ...docSnap.data().list];
             else categories = ["Hammasi"];
@@ -644,7 +624,6 @@
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminCategories();
         });
 
-        // Mahsulotlar (narx bo'yicha saralash applyFilters ichida)
         onSnapshot(collection(db, "products"), (snap) => {
             products = [];
             snap.forEach(d => products.push({ id: d.id, ...d.data() }));
@@ -652,7 +631,6 @@
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminProducts();
         });
 
-        // Buyurtmalar
         onSnapshot(query(collection(db, "orders"), orderBy("date", "desc")), (snap) => {
             allOrders = [];
             myOrders  = [];
@@ -665,7 +643,6 @@
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminOrders();
         });
 
-        // Adminlar
         onSnapshot(doc(db, "settings", "admins"), (docSnap) => {
             if (docSnap.exists()) admins = docSnap.data().list || admins;
             else setDoc(doc(db, "settings", "admins"), { list: admins });
@@ -673,7 +650,6 @@
             renderAdminUsers();
         });
 
-        // Foydalanuvchi ma'lumotlari
         getDoc(doc(db, "users", userId)).then(docSnap => {
             if (docSnap.exists()) {
                 let data = docSnap.data();
@@ -694,7 +670,6 @@
                 `<button class="cat-btn ${currentCat === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
             ).join('');
 
-            // Admin uchun: kategoriya tugmasiga uzoq bosish → tanlash rejimi
             if (isAdmin) {
                 container.querySelectorAll('.cat-btn').forEach((btn, i) => {
                     const cat = categories[i];
@@ -705,7 +680,6 @@
                 });
             }
 
-            // Mahsulot formi uchun ko'p kategoriya checkboxlari
             const catsContainer = document.getElementById('ap-cats-container');
             if (catsContainer) {
                 if (catsOnly.length === 0) {
@@ -719,7 +693,6 @@
                 }
             }
 
-            // Admin tanlash paneli uchun kategoriyalar
             const asbCats = document.getElementById('asb-cats');
             if (asbCats) {
                 asbCats.innerHTML = catsOnly.map(cat =>
@@ -734,7 +707,6 @@
         function applyFilters() {
             filteredProducts = products
                 .filter(p => {
-                    // Ko'p kategoriya qo'llab-quvvatlash (cats array yoki eski cat string)
                     let pCats    = p.cats || (p.cat ? [p.cat] : []);
                     let matchCat = currentCat === 'Hammasi' || pCats.includes(currentCat);
                     let matchSearch = p.name.toLowerCase().includes(searchQuery);
@@ -755,7 +727,6 @@
                 let isOut      = !isInfinity && stockNum <= 0;
                 let isSel      = selectedProducts.has(p.id);
 
-                // Tanlash rejimi (admin, kategoriyaga qo'shish)
                 if (selectionMode) {
                     return `
                     <div class="product-card ${isSel ? 'p-selected' : ''}" data-id="${p.id}"
@@ -773,7 +744,6 @@
                     </div>`;
                 }
 
-                // Oddiy rejim
                 return `
                 <div class="product-card" data-id="${p.id}" style="${isOut ? 'opacity:0.6;' : ''}">
                     <div class="select-check"></div>
@@ -794,7 +764,6 @@
                 </div>`;
             }).join('');
 
-            // Admin uchun: mahsulot ustiga uzoq bosish → tahrirlash
             if (isAdmin && !selectionMode) {
                 list.querySelectorAll('.product-card').forEach(card => {
                     const pid = card.dataset.id;
@@ -838,7 +807,6 @@
             const grid = document.getElementById('products-list');
             bar.classList.add('show');
             grid.classList.add('selection-active');
-            // Barcha mahsulotlarni ko'rsatish (filter emas)
             if (currentCat !== 'Hammasi') {
                 currentCat = 'Hammasi';
                 renderCategoriesUI();
@@ -859,7 +827,6 @@
             if (selectedProducts.has(id)) selectedProducts.delete(id);
             else selectedProducts.add(id);
             updateSelectionBar();
-            // Faqat shu kartani yangilash
             const card = document.querySelector(`.product-card[data-id="${id}"]`);
             if (card) {
                 card.classList.toggle('p-selected', selectedProducts.has(id));
@@ -1014,7 +981,6 @@
             });
         };
 
-        // ── GPS ──────────────────────────────────────────────────────────
         window.getLocation = () => {
             const btn = document.getElementById('btn-location');
             if (navigator.geolocation) {
@@ -1032,7 +998,6 @@
             }
         };
 
-        // ── BUYURTMA BERISH ──────────────────────────────────────────────
         window.openCheckout = () => {
             let rawPhone = userData.phone ? userData.phone.replace(/\D/g, '') : '';
             if (!rawPhone || rawPhone.length < 9 || !userName || userName.trim() === "" || userName === "Foydalanuvchi") {
@@ -1080,7 +1045,6 @@
             }
         };
 
-        // ── PROFIL ───────────────────────────────────────────────────────
         function updateProfileView() {
             document.getElementById('prof-name').innerText  = userName;
             document.getElementById('prof-phone').innerText = userData.phone ? "+998 " + userData.phone : "Kiritilmagan";
@@ -1117,7 +1081,6 @@
             el.value = res;
         };
 
-        // ── SOTUVCHI KONTAKT ─────────────────────────────────────────────
         function updateSellerContactModal() {
             const phoneRow    = document.getElementById('sc-phone-row');
             const telegramRow = document.getElementById('sc-telegram-row');
@@ -1144,7 +1107,6 @@
             document.getElementById('seller-contact-modal').style.display = 'block';
         };
 
-        // ── ADMIN PANEL ──────────────────────────────────────────────────
         function checkAdmin() {
             isAdmin = admins.includes(userId);
             document.getElementById('btn-admin-panel').style.display = isAdmin ? 'block' : 'none';
@@ -1172,7 +1134,6 @@
             document.getElementById('upload-spinner').style.display = 'none';
         }
 
-        // ── UMUMIY SOZLAMALAR SAQLASH ────────────────────────────────────
         window.saveGlobalSettings = async () => {
             let min      = Number(document.getElementById('as-min-order').value)    || 0;
             let fee      = Number(document.getElementById('as-fee-percent').value)  || 0;
@@ -1184,7 +1145,6 @@
             tg.showAlert("✅ Sozlamalar saqlandi!");
         };
 
-        // ── ADMIN BUYURTMALAR ────────────────────────────────────────────
         function formatDate(ts) {
             let d     = new Date(ts);
             let day   = String(d.getDate()).padStart(2, '0');
@@ -1286,7 +1246,6 @@
             });
         };
 
-        // ── ADMIN MAHSULOTLAR (KATEGORIYA BO'YICHA GURUHLANGAN) ──────────
         function renderAdminProductItem(p) {
             let stock = (p.count || '#') === '#' ? '∞' : p.count + ' ta';
             let pCats = p.cats || (p.cat ? [p.cat] : []);
@@ -1316,10 +1275,9 @@
             if (products.length === 0) { list.innerHTML = "<p style='color:var(--gray); text-align:center;'>Mahsulot yo'q.</p>"; return; }
 
             let html = '';
-            let categorizedIds = new Set(); // kamida bir kategoriyaga tegishli mahsulotlar
+            let categorizedIds = new Set(); 
 
             catsOnly.forEach((cat, idx) => {
-                // Ko'p kategoriya qo'llab-quvvatlash
                 let catProds = products
                     .filter(p => {
                         let pCats = p.cats || (p.cat ? [p.cat] : []);
@@ -1346,7 +1304,6 @@
                 </div>`;
             });
 
-            // Hech qanday kategoriyaga tegishli bo'lmagan mahsulotlar
             let others = products
                 .filter(p => !categorizedIds.has(p.id))
                 .sort((a, b) => Number(a.price) - Number(b.price));
@@ -1369,12 +1326,10 @@
             list.innerHTML = html;
         }
 
-        // ── MAHSULOT QO'SHISH/TAHRIRLASH ─────────────────────────────────
         window.saveProduct = async () => {
             let id       = document.getElementById('ap-id').value;
             let imgUrl   = document.getElementById('ap-img-url').value;
             let countVal = document.getElementById('ap-count').value.trim() || '#';
-            // Ko'p kategoriya: belgilangan checkboxlarni o'qish
             let selectedCats = [...document.querySelectorAll('.ap-cat-cb:checked')].map(cb => cb.value);
             if (selectedCats.length === 0) return tg.showAlert("Kamida bitta kategoriya tanlang!");
             let data = {
@@ -1383,7 +1338,7 @@
                 count: countVal,
                 img:   imgUrl,
                 cats:  selectedCats,
-                cat:   selectedCats[0],   // orqaga moslik uchun
+                cat:   selectedCats[0],  
                 desc:  document.getElementById('ap-desc').value
             };
             if (!data.name || !data.price) return tg.showAlert("Ma'lumot to'liq emas");
@@ -1395,9 +1350,8 @@
 
         window.editProduct = (id) => {
             let p = products.find(x => x.id === id); if (!p) return;
-            // Avval formni ochish (reset bo'ladi), so'ng ma'lumot to'ldirish
             openAdminView('admin-add-prod');
-            switchAddMethod('manual');   // har doim qo'lda tab
+            switchAddMethod('manual');   
             document.getElementById('ap-id').value      = p.id;
             document.getElementById('ap-name').value    = p.name;
             document.getElementById('ap-price').value   = p.price;
@@ -1406,13 +1360,11 @@
             document.getElementById('ap-desc').value    = p.desc || '';
             document.getElementById('form-title').innerText = "Mahsulotni tahrirlash";
 
-            // Ko'p kategoriya checkboxlarini belgilash
             let pCats = p.cats || (p.cat ? [p.cat] : []);
             document.querySelectorAll('.ap-cat-cb').forEach(cb => {
                 cb.checked = pCats.includes(cb.value);
             });
 
-            // Rasm preview
             if (p.img) {
                 const preview = document.getElementById('ap-img-preview');
                 preview.src = p.img;
@@ -1431,9 +1383,7 @@
             document.getElementById('ap-img-url').value = "";
             document.getElementById('ap-desc').value    = "";
             document.getElementById('form-title').innerText = "Yangi mahsulot";
-            // Barcha kategoriya checkboxlarini olib tashlash
             document.querySelectorAll('.ap-cat-cb').forEach(cb => cb.checked = false);
-            // Import tabni ham tozalash va manual rejimga qaytish
             switchAddMethod('manual');
             document.getElementById('import-codes').value    = '';
             document.getElementById('import-results').innerHTML = '';
@@ -1448,7 +1398,6 @@
             });
         };
 
-        // ── KATEGORIYALAR (DRAG & DROP BILAN) ────────────────────────────
         window.renderAdminCategories = () => {
             const list     = document.getElementById('admin-cats-list');
             const catsOnly = categories.filter(c => c !== 'Hammasi');
@@ -1464,10 +1413,8 @@
                 </div>
             `).join('');
 
-            // Avvalgi Sortable ni yo'q qilish
             if (categorySortable) { try { categorySortable.destroy(); } catch(e){} }
 
-            // Yangi Sortable yaratish (SortableJS)
             if (typeof Sortable !== 'undefined') {
                 categorySortable = Sortable.create(list, {
                     animation:    200,
@@ -1497,7 +1444,6 @@
             await setDoc(doc(db, "settings", "categories"), { list: catsOnly });
         };
 
-        // ── ADMINLAR ─────────────────────────────────────────────────────
         function renderAdminUsers() {
             const list = document.getElementById('admin-users-list');
             list.innerHTML = admins.map(a => `
@@ -1522,7 +1468,6 @@
             await setDoc(doc(db, "settings", "admins"), { list: newList });
         };
 
-        // ── TAB ALMASHISH ────────────────────────────────────────────────
         window.switchTab = (tabId, el) => {
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
@@ -1532,14 +1477,14 @@
             if (tabId === 'cart') renderCart();
         };
 
-        // ── FABERLIC ARTIKUL ORQALI IMPORT ──────────────────────────────
+        // ── FABERLIC ARTIKUL ORQALI IMPORT ───────────────────────────────────
         let importedProducts = [];
 
         const FABERLIC_API_BASE   = "https://faberlic.com/flecom/api/v1/products";
         const FABERLIC_API_PARAMS = "baseStore=UZB_9300&priceGroup=PRIV&nextPeriodPriceEnabled=false&language=uz";
         const FABERLIC_IMG_BASE   = "https://faberlic.com/medias/";
 
-        // HTML teglarni tozalash — tarkibli matn saqlanadi
+        // HTML teglarini tozalash funksiyasi
         function stripHtmlImport(html) {
             if (!html) return '';
             return html
@@ -1547,93 +1492,10 @@
                 .replace(/<\/p>/gi, '\n')
                 .replace(/<\/li>/gi, '\n')
                 .replace(/<li>/gi, '• ')
-                .replace(/<strong>/gi, '').replace(/<\/strong>/gi, '')
                 .replace(/<[^>]*>/g, '')
-                .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-                .replace(/&nbsp;/g, ' ').replace(/&#[0-9]+;/g, '')
+                .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/ /g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim();
-        }
-
-        // Faberlic API — artikul raqami orqali mahsulot topish
-        async function fetchFaberlicData(article) {
-            const artStr = String(article).trim();
-
-            // 1-qadam: artikul raqami bo'yicha qidirish
-            const searchUrl = `${FABERLIC_API_BASE}/search?query=${encodeURIComponent(artStr)}&${FABERLIC_API_PARAMS}&pageSize=20`;
-            const searchResp = await fetch(searchUrl);
-            if (!searchResp.ok) throw new Error(`Qidiruv xatosi: HTTP ${searchResp.status}`);
-            const searchJson = await searchResp.json();
-
-            const list = searchJson.products
-                || (searchJson.data && searchJson.data.products)
-                || searchJson.results
-                || [];
-
-            if (list.length === 0) throw new Error(`Artikul "${artStr}" topilmadi`);
-
-            // Aniq mos mahsulotni topish
-            let found = list.find(p =>
-                String(p.article)          === artStr ||
-                String(p.displayedArticle) === artStr
-            );
-            if (!found) found = list[0];
-            if (!found?.code) throw new Error(`Mahsulot kodi topilmadi`);
-
-            // 2-qadam: to'liq ma'lumot (fullDesc, applicationModeDesc) olish
-            const detailUrl = `${FABERLIC_API_BASE}/${encodeURIComponent(found.code)}?${FABERLIC_API_PARAMS}`;
-            const detailResp = await fetch(detailUrl);
-            if (!detailResp.ok) throw new Error(`HTTP ${detailResp.status}`);
-            const detailJson = await detailResp.json();
-            if (!detailJson.data) throw new Error("To'liq ma'lumot topilmadi");
-
-            return detailJson.data;
-        }
-
-        // API ma'lumotidan mahsulot obyekti yasash — TO'G'RI FORMAT
-        function buildImportProduct(data) {
-            // Asosiy rasm
-            const defaultImg = (data.img || []).find(i => i.isDefault) || (data.img || [])[0];
-            const imgUrl     = defaultImg ? `${FABERLIC_IMG_BASE}${defaultImg.file}` : '';
-
-            // Nom: "Arvanta ayollar ifori 3329"
-            const article = String(data.article || data.displayedArticle || '').trim();
-            const name    = article ? `${data.name} ${article}` : (data.name || 'Nomsiz');
-
-            // Tavsif bloki:
-            // Hajmi: 50ml.
-            //
-            // Tavsifi: ...fullDesc matn...
-            //
-            // Qo'llanishi:
-            // ...applicationModeDesc matn...
-            const parts = [];
-
-            if (data.volume) {
-                parts.push(`Hajmi: ${data.volume}ml.`);
-            }
-
-            const fullDescText = stripHtmlImport(data.fullDesc || '');
-            if (fullDescText) {
-                parts.push(`Tavsifi: ${fullDescText}`);
-            }
-
-            const appDescText = stripHtmlImport(data.applicationModeDesc || '');
-            if (appDescText) {
-                parts.push(`Qo'llanishi:\n${appDescText}`);
-            }
-
-            return {
-                name:    name,
-                img:     imgUrl,
-                price:   data.catalogPrice || data.price || 0,
-                count:   '#',
-                cats:    [],
-                cat:     '',
-                desc:    parts.join('\n\n'),
-                article: article,
-                fabCode: data.code || ''
-            };
         }
 
         window.switchAddMethod = (method) => {
@@ -1647,62 +1509,94 @@
         };
 
         window.fetchByCode = async () => {
-            const inputText = document.getElementById('import-codes').value.trim();
-            const articles  = inputText.split(/[\n,;]+/).map(a => a.trim()).filter(Boolean);
+            const codesText = document.getElementById('import-codes').value.trim();
+            // Artikul sonlarini olish
+            const codes = codesText.split(/[\n,;]+/).map(c => c.trim()).filter(Boolean);
 
-            if (!articles.length) { tg.showAlert("Kamida bitta artikul raqami kiriting!"); return; }
+            if (!codes.length) { tg.showAlert("Kamida bitta artikul kiriting!"); return; }
 
             const btn        = document.getElementById('btn-fetch-codes');
             const saveBtn    = document.getElementById('btn-save-imported');
             const resultArea = document.getElementById('import-results');
 
-            btn.disabled          = true;
-            btn.textContent       = '⏳ Qidirilmoqda...';
-            resultArea.innerHTML  = '';
+            btn.disabled    = true;
+            btn.textContent = '⏳ Yuklanmoqda...';
+            resultArea.innerHTML = '';
             saveBtn.style.display = 'none';
-            importedProducts      = [];
+            importedProducts = [];
 
-            for (let i = 0; i < articles.length; i++) {
-                const art = articles[i];
-                btn.textContent = `⏳ ${i + 1}/${articles.length} — "${art}" qidirilmoqda...`;
+            for (let i = 0; i < codes.length; i++) {
+                const code = codes[i];
+                btn.textContent = `⏳ ${i + 1}/${codes.length} yuklanmoqda...`;
                 try {
-                    const data    = await fetchFaberlicData(art);
-                    const product = buildImportProduct(data);
+                    // API artikul orqali ishlashi mumkin
+                    const url  = `${FABERLIC_API_BASE}/${encodeURIComponent(code)}?${FABERLIC_API_PARAMS}`;
+                    const resp = await fetch(url);
+
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    const json = await resp.json();
+                    const data = json.data;
+                    if (!data) throw new Error("Ma'lumot topilmadi");
+
+                    const defaultImg = (data.img || []).find(i => i.isDefault) || (data.img || [])[0];
+                    const imgUrl     = defaultImg ? `${FABERLIC_IMG_BASE}${defaultImg.file}` : '';
+                    
+                    // Siz so'ragan format: Nomi. Artikul
+                    const finalName = `${data.name || 'Nomsiz'}${data.article ? '. ' + data.article : ''}`;
+                    
+                    // Siz so'ragan tavsif formati
+                    const volumePart = data.volume ? `Hajmi: ${data.volume} ml.` : '';
+                    const descPart   = data.fullDesc ? `Tavsifi: ${stripHtmlImport(data.fullDesc)}` : '';
+                    const appPart    = data.applicationModeDesc ? `Qo'llanishi: ${stripHtmlImport(data.applicationModeDesc)}` : '';
+                    
+                    const desc = [volumePart, descPart, appPart].filter(Boolean).join('\n\n');
+
+                    const product = {
+                        name:    finalName,
+                        img:     imgUrl,
+                        price:   data.catalogPrice || data.price || 0,
+                        count:   '#',
+                        cats:    [],
+                        cat:     '',
+                        desc:    desc,
+                        article: data.article || '',
+                        fabCode: data.code    || ''
+                    };
+
                     importedProducts.push(product);
 
                     resultArea.innerHTML += `
                         <div class="irc-card ok">
-                            <img src="${product.img}" onerror="this.src='https://via.placeholder.com/64'" alt="">
+                            <img src="${imgUrl}" onerror="this.src='https://via.placeholder.com/64'" alt="">
                             <div class="irc-info">
-                                <div class="irc-name">${product.name}</div>
-                                <div class="irc-price">${Number(product.price).toLocaleString()} so'm</div>
-                                <div class="irc-meta">✅ Tayyor · ${data.volume || '—'}ml · Artikul: ${art}</div>
+                                <div class="irc-name">${finalName}</div>
+                                <div class="irc-price">${Number(data.catalogPrice).toLocaleString()} so'm</div>
+                                <div class="irc-meta">✅ Tayyor · Artikul: ${code}</div>
                             </div>
                         </div>`;
                 } catch (err) {
                     let errMsg = err.message;
-                    if (err.message.toLowerCase().includes('failed to fetch') ||
-                        err.message.toLowerCase().includes('networkerror')   ||
-                        err.message.toLowerCase().includes('cors')) {
-                        errMsg = "Tarmoq xatosi. Telegram bot orqali /addproduct yuboring.";
+                    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                        errMsg = "CORS xatosi. Telegram bot orqali /addproduct buyrug'ini ishlating.";
                     }
                     resultArea.innerHTML += `
                         <div class="irc-card err">
                             <div class="irc-info">
-                                <div class="irc-name" style="color:var(--red);">❌ Artikul: ${art}</div>
+                                <div class="irc-name" style="color:var(--red);">❌ Artikul: ${code}</div>
                                 <div class="irc-meta">${errMsg}</div>
                             </div>
                         </div>`;
                 }
-                await new Promise(r => setTimeout(r, 300));
+
+                await new Promise(r => setTimeout(r, 200));
             }
 
             btn.disabled    = false;
             btn.textContent = '🔍 Yuklab olish';
 
             if (importedProducts.length > 0) {
-                saveBtn.style.display = 'block';
-                saveBtn.textContent   = `💾 ${importedProducts.length} ta mahsulotni saqlash`;
+                saveBtn.style.display  = 'block';
+                saveBtn.textContent    = `💾 ${importedProducts.length} ta mahsulotni saqlash`;
             }
         };
 
@@ -1724,12 +1618,11 @@
 
             importedProducts = [];
             btn.style.display = 'none';
-            document.getElementById('import-codes').value   = '';
+            document.getElementById('import-codes').value  = '';
             document.getElementById('import-results').innerHTML = '';
-            tg.showAlert(`✅ ${saved} ta mahsulot saqlandi!\n\nKategoriya belgilash uchun mahsulot ustiga uzoq bosing.`);
+            tg.showAlert(`✅ ${saved} ta mahsulot muvaffaqiyatli saqlandi!\n\nKategoriya belgilash uchun mahsulot ustiga uzoq bosing.`);
         };
 
-        // ── MAHSULOT DETAIL MODALI ───────────────────────────────────────
         window.openProductModal = (id) => {
             let p = products.find(x => x.id === id); if (!p) return;
             document.getElementById('pm-img').src        = p.img || 'https://via.placeholder.com/400';
