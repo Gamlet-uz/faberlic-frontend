@@ -410,20 +410,20 @@
 
                 <div class="method-tabs">
                     <button id="btn-method-manual" class="method-tab active" onclick="switchAddMethod('manual')">✍️ Qo'lda</button>
-                    <button id="btn-method-code"   class="method-tab inactive" onclick="switchAddMethod('code')">🔢 Kod orqali</button>
+                    <button id="btn-method-code"   class="method-tab inactive" onclick="switchAddMethod('code')">🔢 Artikul orqali</button>
                 </div>
 
                 <div id="add-manual-section">
                     <input type="hidden" id="ap-id">
                     <input type="hidden" id="ap-img-url">
-                    <input type="text"   id="ap-name"  class="input-style" placeholder="Nomi (M: Atir. 3128)">
+                    <input type="text"   id="ap-name"  class="input-style" placeholder="Nomi">
                     <input type="number" id="ap-price" class="input-style" placeholder="Narxi (so'm)">
                     <input type="text"   id="ap-count" class="input-style" placeholder="Soni (Cheksiz uchun # qoldiring)">
                     <div style="margin: 8px 0;">
                         <label style="font-weight:bold; color:var(--gray); display:block; margin-bottom:4px;">Kategoriyalar (bir yoki koʼproq tanlang)</label>
                         <div id="ap-cats-container" class="cats-check-wrap"></div>
                     </div>
-                    <textarea id="ap-desc" class="input-style" placeholder="Hajmi: 50 ml.\nTavsifi: ..."></textarea>
+                    <textarea id="ap-desc" class="input-style" placeholder="Hajmi: "></textarea>
 
                     <label style="font-weight:bold; color:var(--gray); display:block; margin-top:5px;">Mahsulot rasmi</label>
                     <div class="img-upload-area" id="upload-area" onclick="document.getElementById('ap-img-file').click()">
@@ -440,13 +440,13 @@
 
                 <div id="add-code-section" style="display:none;">
                     <div class="import-info-box">
-                        📌 <b>Faberlic mahsulotining uzun kodini</b> kiriting (masalan, <code>010501-064062</code>).<br>
-                        Bir nechta kod kiritmoqchi bo'lsangiz, har birini yangi qatorga yozing.
+                        📌 <b>Faberlic mahsulotining qisqa artikulini</b> kiriting (masalan, <code>6800</code>).<br>
+                        Dastur avtomatik to'liq kodni topib, ma'lumotlarni to'ldiradi. Bir nechta kiritish uchun yangi qatorga yozing.
                     </div>
 
-                    <textarea id="import-codes" class="input-style" placeholder="010501-035714
-010502-00038
-010503-00126"></textarea>
+                    <textarea id="import-codes" class="input-style" placeholder="6800
+3128
+3325"></textarea>
 
                     <button id="btn-fetch-codes" class="main-btn" onclick="fetchByCode()" style="margin-top:8px;">🔍 Yuklab olish</button>
 
@@ -528,6 +528,7 @@
         let selectionMode    = false;
         let selectedProducts = new Set();
 
+        // ── LONG PRESS UTILITY ───────────────────────────────────────────
         function addLongPress(el, callback, duration = 600) {
             let timer;
             const start = (e) => {
@@ -546,6 +547,7 @@
             el.addEventListener('mouseleave', cancel);
         }
 
+        // ── IMGBB RASM YUKLASH ───────────────────────────────────────────
         const IMGBB_API_KEY = "b2d8a186f54db4ca35a446925ec3ebdf";
 
         window.handleImageUpload = async (input) => {
@@ -582,6 +584,7 @@
             }
         };
 
+        // ── CONFIRM MODAL ────────────────────────────────────────────────
         let confirmAction = null;
         window.askConfirm = (title, desc, onYes) => {
             document.getElementById('confirm-title').innerText = title;
@@ -594,6 +597,7 @@
             if (confirmAction) { await confirmAction(); closeConfirm(); }
         };
 
+        // ── FIREBASE LISTENERS ───────────────────────────────────────────
         onSnapshot(doc(db, "settings", "general"), (docSnap) => {
             if (docSnap.exists()) globalSettings = docSnap.data();
             else globalSettings = { minOrder: 50000, feePercent: 3 };
@@ -654,6 +658,7 @@
             updateProfileView();
         });
 
+        // ── UI FUNKSIYALARI ──────────────────────────────────────────────
         function renderCategoriesUI() {
             const container = document.getElementById('cats-container');
             const catsOnly  = categories.filter(c => c !== 'Hammasi');
@@ -1468,14 +1473,9 @@
             if (tabId === 'cart') renderCart();
         };
 
-        // ── FABERLIC UZUN KOD ORQALI IMPORT ───────────────────────────────────
+        // ── FABERLIC ARTIKUL ORQALI IMPORT (2 BOSQICHLI) ───────────────────
         let importedProducts = [];
 
-        const FABERLIC_API_BASE   = "https://faberlic.com/flecom/api/v1/products";
-        const FABERLIC_API_PARAMS = "baseStore=UZB_9300&priceGroup=PRIV&nextPeriodPriceEnabled=false&language=uz";
-        const FABERLIC_IMG_BASE   = "https://faberlic.com/medias/";
-
-        // HTML teglarini tozalash
         function stripHtmlImport(html) {
             if (!html) return '';
             return html
@@ -1503,7 +1503,7 @@
             const codesText = document.getElementById('import-codes').value.trim();
             const codes = codesText.split(/[\n,;]+/).map(c => c.trim()).filter(Boolean);
 
-            if (!codes.length) { tg.showAlert("Kamida bitta kod kiriting!"); return; }
+            if (!codes.length) { tg.showAlert("Kamida bitta qisqa artikul kiriting!"); return; }
 
             const btn        = document.getElementById('btn-fetch-codes');
             const saveBtn    = document.getElementById('btn-save-imported');
@@ -1515,39 +1515,56 @@
             saveBtn.style.display = 'none';
             importedProducts = [];
 
-            for (let i = 0; i < codes.length; i++) {
-                const code = codes[i];
-                btn.textContent = `⏳ ${i + 1}/${codes.length} yuklanmoqda...`;
-                try {
-                    const productUrl = `${FABERLIC_API_BASE}/${encodeURIComponent(code)}?${FABERLIC_API_PARAMS}`;
-                    const resp = await fetch(productUrl);
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
 
-                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            for (let i = 0; i < codes.length; i++) {
+                const typedCode = codes[i];
+                btn.textContent = `⏳ ${i + 1}/${codes.length} yuklanmoqda...`;
+                
+                try {
+                    // 1-qadam: Uzun kodni topish (Allorigins orqali saytni qidirish)
+                    const searchTarget = `https://faberlic.com/uz/uz/search?text=${encodeURIComponent(typedCode)}`;
+                    const searchResp = await fetch(proxyUrl + encodeURIComponent(searchTarget));
+                    
+                    if (!searchResp.ok) throw new Error("Qidiruv ishlamayapti (Proxy xatosi)");
+                    const html = await searchResp.text();
+                    
+                    // Regex: HTML orasidan uzun kodni tutadi (masalan, 010602-049668)
+                    const codeMatch = html.match(/(\d{6}-\d+)/);
+                    if (!codeMatch) throw new Error("Artikul saytdan topilmadi");
+                    const longCode = codeMatch[1];
+
+                    // 2-qadam: Asosiy API dan to'liq ma'lumotlarni tortish
+                    const productApi = `https://faberlic.com/flecom/api/v1/products/${encodeURIComponent(longCode)}?baseStore=UZB_9300&priceGroup=PRIV&nextPeriodPriceEnabled=false&language=uz`;
+                    const resp = await fetch(proxyUrl + encodeURIComponent(productApi));
+
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status} API xatosi`);
                     const json = await resp.json();
                     const data = json.data;
-                    if (!data) throw new Error("Ma'lumot topilmadi");
+                    if (!data) throw new Error("Batafsil ma'lumot topilmadi");
 
+                    // Rasmlarni olish
                     const defaultImg = (data.img || []).find(img => img.isDefault) || (data.img || [])[0];
-                    const imgUrl     = defaultImg ? `${FABERLIC_IMG_BASE}${defaultImg.file}` : '';
+                    const imgUrl     = defaultImg ? `https://faberlic.com/medias/${defaultImg.file}` : '';
                     
-                    const finalName = `${data.name || 'Nomsiz'}${data.article ? '. ' + data.article : ''}`;
+                    // Nomi va artikul
+                    const finalName = `${data.name || 'Nomsiz'}. ${data.article || typedCode}`;
                     
-                    const mainDesc    = stripHtmlImport(data.description || data.shortDescription || data.fullDesc || data.desc || '');
+                    // Tavsif qismlari (to'liq jamlanadi)
+                    const volumeStr   = data.volume ? `Hajmi: ${data.volume} ml.` : '';
+                    const weightStr   = data.weight ? `Og'irligi: ${data.weight} g.` : '';
+                    const mainDesc    = stripHtmlImport(data.description || data.fullDesc || data.shortDescription || '');
                     const appDesc     = stripHtmlImport(data.applicationModeDesc || '');
                     const composition = stripHtmlImport(data.composition || '');
-                    
-                    const volumeStr   = data.volume ? `Hajmi: ${data.volume}` : '';
-                    const weightStr   = data.weight ? `Og'irligi: ${data.weight}` : '';
 
                     const descParts = [];
                     if (volumeStr) descParts.push(volumeStr);
                     if (weightStr) descParts.push(weightStr);
-                    if (mainDesc) descParts.push(`📝 *Tavsif:*\n${mainDesc}`);
-                    if (appDesc) descParts.push(`💡 *Qo'llanilishi:*\n${appDesc}`);
-                    if (composition) descParts.push(`🧪 *Tarkibi:*\n${composition}`);
+                    if (mainDesc)  descParts.push(`📝 Tavsifi:\n${mainDesc}`);
+                    if (appDesc)   descParts.push(`💡 Qo'llanishi:\n${appDesc}`);
+                    if (composition) descParts.push(`🧪 Tarkibi:\n${composition}`);
 
                     const finalDesc = descParts.join('\n\n');
-                    const articleNum = data.code || data.article || code;
 
                     const product = {
                         name:    finalName,
@@ -1557,8 +1574,8 @@
                         cats:    [],
                         cat:     '',
                         desc:    finalDesc,
-                        article: articleNum,
-                        fabCode: code
+                        article: data.article || typedCode,
+                        fabCode: longCode
                     };
 
                     importedProducts.push(product);
@@ -1568,8 +1585,8 @@
                             <img src="${imgUrl}" onerror="this.src='https://via.placeholder.com/64'" alt="">
                             <div class="irc-info">
                                 <div class="irc-name">${finalName}</div>
-                                <div class="irc-price">${Number(data.catalogPrice).toLocaleString()} so'm</div>
-                                <div class="irc-meta">✅ Tayyor · Kod: ${code}</div>
+                                <div class="irc-price">${Number(product.price).toLocaleString()} so'm</div>
+                                <div class="irc-meta">✅ Tayyor · Artikul: ${typedCode}</div>
                             </div>
                         </div>`;
                 } catch (err) {
@@ -1577,7 +1594,7 @@
                     resultArea.innerHTML += `
                         <div class="irc-card err">
                             <div class="irc-info">
-                                <div class="irc-name" style="color:var(--red);">❌ Kod: ${code}</div>
+                                <div class="irc-name" style="color:var(--red);">❌ Artikul: ${typedCode}</div>
                                 <div class="irc-meta">${errMsg}</div>
                             </div>
                         </div>`;
