@@ -155,7 +155,7 @@
         /* ADMIN SETTINGS SECTION */
         .settings-section-title { font-size: 13px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 8px 0; padding-bottom: 6px; border-bottom: 2px solid #f3e0ef; }
 
-        /* ADMIN SELECTION MODE BAR */
+        /* ADMIN SELECTION MODE BAR (USER) */
         .admin-select-bar { position: sticky; top: 0; z-index: 100; background: var(--brand); color: white; padding: 10px 15px; display: none; flex-direction: column; gap: 8px; border-radius: 0 0 18px 18px; box-shadow: 0 6px 20px rgba(139,26,107,0.4); }
         .admin-select-bar.show { display: flex; }
         .admin-select-bar .asb-row { display: flex; justify-content: space-between; align-items: center; }
@@ -278,7 +278,7 @@
         <div id="favorites-list" class="products-grid" style="padding: 15px;"></div>
     </div>
 
-    <div id="product-modal" class="full-modal">
+    <div id="product-modal" class="full-modal" style="z-index: 3500;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('product-modal')">←</button>
             <span>Mahsulot</span>
@@ -377,6 +377,13 @@
                         <div class="si-value" id="dev-phone" style="color:white;">—</div>
                     </div>
                 </div>
+                <div class="seller-info-row dev-info-row" id="dev-telegram-row" style="display:none;">
+                    <div class="si-icon">💬</div>
+                    <div>
+                        <div class="si-label" style="color:#ddd;">Telegram (Yozish)</div>
+                        <div class="si-value" id="dev-telegram" style="color:white;">—</div>
+                    </div>
+                </div>
                 <div class="seller-info-row dev-info-row" id="dev-channel-row" style="display:none;">
                     <div class="si-icon">📢</div>
                     <div>
@@ -425,6 +432,8 @@
                 <div class="settings-section-title">🤖 Yaratuvchi ma'lumotlari (Men haqimda)</div>
                 <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Yaratuvchi telefon raqami</label>
                 <input type="text" id="as-dev-phone" class="input-style" placeholder="+998 90 000 00 00">
+                <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Yaratuvchi Telegrami (Nick)</label>
+                <input type="text" id="as-dev-telegram" class="input-style" placeholder="@username">
                 <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Telegram Kanali</label>
                 <input type="text" id="as-dev-channel" class="input-style" placeholder="@kanal_nomi">
 
@@ -440,10 +449,28 @@
             </div>
 
             <div id="admin-prods" class="admin-section" style="display:none;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="margin:0;">Mahsulotlar</h3>
-                    <button class="main-btn" style="margin:0; width:auto; padding:8px 15px; font-size:14px;" onclick="openAdminView('admin-add-prod')">➕ Qo'shish</button>
+                <div id="admin-products-header">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h3 style="margin:0;">Mahsulotlar</h3>
+                        <button class="main-btn" style="margin:0; width:auto; padding:8px 15px; font-size:14px;" onclick="openAdminView('admin-add-prod')">➕ Qo'shish</button>
+                    </div>
+                    
+                    <div id="admin-selection-actions" style="display:none; background: #fdf0fa; border: 2px solid var(--brand); border-radius: 12px; padding: 10px; margin-bottom: 15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+                            <b id="admin-sel-count" style="color:var(--brand);">0 ta tanlandi</b>
+                            <div style="display:flex; gap: 5px;">
+                                <button style="background:var(--brand); color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;" onclick="adminSelectAll()">Barchasi</button>
+                                <button style="background:var(--gray); color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer;" onclick="exitAdminListSelectionMode()">✕</button>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap: 10px;">
+                            <button style="flex:1; background:var(--red); color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="adminAskDeleteSelected()">🗑 O'chirish</button>
+                            <button style="flex:1; background:#007aff; color:white; border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="document.getElementById('admin-sel-cats').style.display='flex'">📁 Katalog</button>
+                        </div>
+                        <div id="admin-sel-cats" style="display:none; gap:5px; margin-top:10px; overflow-x:auto; padding-bottom:5px; scrollbar-width: none;"></div>
+                    </div>
                 </div>
+
                 <div id="admin-products-list"></div>
             </div>
 
@@ -566,11 +593,16 @@
         let searchQuery      = "";
         let userData         = { phone: "", dob: "" };
         let globalSettings   = { minOrder: 0, feePercent: 3 };
-        let sellerContact    = { phone: "", telegram: "", address: "", devPhone: "", devChannel: "" };
+        let sellerContact    = { phone: "", telegram: "", address: "", devPhone: "", devTelegram: "", devChannel: "" };
         let categorySortable = null;
         let isAdmin          = false;
-        let selectionMode    = false;
+        
+        let selectionMode    = false; // Asosiy oyna tanlash rejimi
         let selectedProducts = new Set();
+        
+        let adminListSelectionMode = false; // Admin panelidagi mahsulotlar tanlash rejimi
+        let adminSelectedProds = new Set();
+        
         let isProfileForced  = false;
 
         function addLongPress(el, callback, duration = 600) {
@@ -649,11 +681,12 @@
 
         onSnapshot(doc(db, "settings", "contact"), (docSnap) => {
             if (docSnap.exists()) sellerContact = docSnap.data();
-            else sellerContact = { phone: "", telegram: "", address: "", devPhone: "", devChannel: "" };
+            else sellerContact = { phone: "", telegram: "", address: "", devPhone: "", devTelegram: "", devChannel: "" };
             document.getElementById('as-seller-phone').value    = sellerContact.phone || '';
             document.getElementById('as-seller-telegram').value = sellerContact.telegram || '';
             document.getElementById('as-seller-address').value  = sellerContact.address || '';
             document.getElementById('as-dev-phone').value       = sellerContact.devPhone || '';
+            document.getElementById('as-dev-telegram').value    = sellerContact.devTelegram || '';
             document.getElementById('as-dev-channel').value     = sellerContact.devChannel || '';
             updateSellerContactModal();
         });
@@ -722,7 +755,6 @@
 
         function renderCategoriesUI() {
             const container = document.getElementById('cats-container');
-            // User view: filter out hidden categories
             const visibleCats = categories.filter(c => c === 'Hammasi' || !hiddenCats.includes(c));
             
             container.innerHTML = visibleCats.map(cat =>
@@ -784,10 +816,8 @@
             } else {
                 favorites.push(id);
             }
-            // Update UI optimistically
             applyFilters();
             if(document.getElementById('favorites-modal').style.display === 'block') renderFavorites();
-            // Save to DB
             await setDoc(doc(db, "users", userId), { favorites: favorites }, { merge: true });
         };
 
@@ -1206,6 +1236,7 @@
             const addressRow  = document.getElementById('sc-address-row');
             const devSection  = document.getElementById('dev-card-section');
             const devPhoneRow = document.getElementById('dev-phone-row');
+            const devTeleRow  = document.getElementById('dev-telegram-row');
             const devChanRow  = document.getElementById('dev-channel-row');
 
             if (sellerContact.phone) {
@@ -1230,13 +1261,22 @@
                 };
             } else { addressRow.style.display = 'none'; }
 
-            if (sellerContact.devPhone || sellerContact.devChannel) {
+            if (sellerContact.devPhone || sellerContact.devTelegram || sellerContact.devChannel) {
                 devSection.style.display = 'block';
                 if(sellerContact.devPhone) {
                     document.getElementById('dev-phone').innerText = sellerContact.devPhone;
                     devPhoneRow.style.display = 'flex';
                 } else { devPhoneRow.style.display = 'none'; }
                 
+                if(sellerContact.devTelegram) {
+                    document.getElementById('dev-telegram').innerText = sellerContact.devTelegram;
+                    devTeleRow.style.display = 'flex';
+                    devTeleRow.onclick = () => {
+                        let username = sellerContact.devTelegram.replace('@', '');
+                        tg.openTelegramLink('https://t.me/' + username);
+                    };
+                } else { devTeleRow.style.display = 'none'; }
+
                 if(sellerContact.devChannel) {
                     document.getElementById('dev-channel').innerText = sellerContact.devChannel;
                     devChanRow.style.display = 'flex';
@@ -1287,10 +1327,11 @@
             let telegram = document.getElementById('as-seller-telegram').value.trim();
             let address  = document.getElementById('as-seller-address').value.trim();
             let devPhone = document.getElementById('as-dev-phone').value.trim();
+            let devTelegram = document.getElementById('as-dev-telegram').value.trim();
             let devChannel = document.getElementById('as-dev-channel').value.trim();
 
             await setDoc(doc(db, "settings", "general"), { minOrder: min, feePercent: fee });
-            await setDoc(doc(db, "settings", "contact"), { phone, telegram, address, devPhone, devChannel });
+            await setDoc(doc(db, "settings", "contact"), { phone, telegram, address, devPhone, devTelegram, devChannel });
             tg.showAlert("✅ Sozlamalar saqlandi!");
         };
 
@@ -1401,21 +1442,99 @@
             let catsHtml = pCats.length > 1
                 ? `<div style="font-size:11px; color:var(--brand); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📁 ${pCats.join(' · ')}</div>`
                 : '';
+                
+            let isSel = adminSelectedProds.has(p.id);
+
             return `
-            <div class="admin-card" style="display:flex; gap:10px; align-items:center;">
-                <img src="${p.img || 'https://via.placeholder.com/50'}" style="width:65px; height:65px; border-radius:10px; object-fit:cover;" onerror="this.src='https://via.placeholder.com/50'">
-                <div style="flex:1; min-width:0;">
+            <div class="admin-card ${isSel ? 'p-selected' : ''}" data-id="${p.id}" 
+                 style="display:flex; gap:10px; align-items:center; position:relative; ${adminListSelectionMode ? 'cursor:pointer; outline:'+(isSel?'3px solid var(--brand)':'none')+';' : ''}"
+                 ${adminListSelectionMode ? `onclick="toggleAdminListSelect('${p.id}')"` : ''}>
+                
+                ${adminListSelectionMode ? `
+                <div style="position:absolute; top:8px; right:8px; width:24px; height:24px; border-radius:50%; border:2px solid var(--brand); background:${isSel ? 'var(--brand)' : 'white'}; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; z-index:5;">
+                    ${isSel ? '✓' : ''}
+                </div>
+                ` : ''}
+
+                <img src="${p.img || 'https://via.placeholder.com/50'}" style="width:65px; height:65px; border-radius:10px; object-fit:cover; ${adminListSelectionMode ? 'pointer-events:none;' : ''}" onerror="this.src='https://via.placeholder.com/50'">
+                
+                <div style="flex:1; min-width:0; ${adminListSelectionMode ? 'pointer-events:none;' : ''}">
                     <b style="display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</b>
                     <span style="color:var(--brand); font-weight:bold;">${Number(p.price).toLocaleString()} so'm</span>
                     <div style="font-size:12px; color:var(--gray);">Qoldiq: ${stock}</div>
                     ${catsHtml}
                 </div>
-                <div style="display:flex; flex-direction:column; gap:5px; flex-shrink:0;">
+                
+                <div style="display:${adminListSelectionMode ? 'none' : 'flex'}; flex-direction:column; gap:5px; flex-shrink:0;">
                     <button style="background:#007aff; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;" onclick="editProduct('${p.id}')">✏️</button>
                     <button style="background:var(--red); color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;" onclick="askDelete('${p.id}')">🗑</button>
                 </div>
             </div>`;
         }
+
+        window.updateAdminListSelectionUI = () => {
+            if (adminListSelectionMode) {
+                document.getElementById('admin-selection-actions').style.display = 'block';
+                document.getElementById('admin-sel-count').innerText = adminSelectedProds.size + " ta tanlandi";
+                
+                const catsOnly = categories.filter(c => c !== 'Hammasi');
+                document.getElementById('admin-sel-cats').innerHTML = catsOnly.map(c => 
+                    `<button style="background:var(--brand); color:white; border:none; padding:6px 14px; border-radius:15px; white-space:nowrap; flex-shrink:0; font-weight:bold;" onclick="adminAssignCategorySelected('${c}')">${c}</button>`
+                ).join('');
+            } else {
+                document.getElementById('admin-selection-actions').style.display = 'none';
+                document.getElementById('admin-sel-cats').style.display = 'none';
+            }
+        };
+
+        window.toggleAdminListSelect = (id) => {
+            if (adminSelectedProds.has(id)) adminSelectedProds.delete(id);
+            else adminSelectedProds.add(id);
+            renderAdminProducts();
+        };
+
+        window.exitAdminListSelectionMode = () => {
+            adminListSelectionMode = false;
+            adminSelectedProds.clear();
+            renderAdminProducts();
+        };
+
+        window.adminSelectAll = () => {
+            if (adminSelectedProds.size === products.length) {
+                adminSelectedProds.clear();
+            } else {
+                products.forEach(p => adminSelectedProds.add(p.id));
+            }
+            renderAdminProducts();
+        };
+
+        window.adminAskDeleteSelected = () => {
+            if (adminSelectedProds.size === 0) return tg.showAlert("Mahsulot tanlanmagan!");
+            askConfirm("O'chirish", `${adminSelectedProds.size} ta mahsulotni haqiqatan ham o'chirasizmi?`, async () => {
+                const ids = [...adminSelectedProds];
+                for (let id of ids) {
+                    await deleteDoc(doc(db, "products", id));
+                }
+                tg.showAlert("O'chirildi!");
+                exitAdminListSelectionMode();
+            });
+        };
+
+        window.adminAssignCategorySelected = async (cat) => {
+            if (adminSelectedProds.size === 0) return tg.showAlert("Mahsulot tanlanmagan!");
+            const ids = [...adminSelectedProds];
+            for (let id of ids) {
+                const p = products.find(x => x.id === id);
+                if (p) {
+                    let pCats = p.cats || (p.cat ? [p.cat] : []);
+                    if (!pCats.includes(cat)) pCats = [...pCats, cat];
+                    await updateDoc(doc(db, 'products', id), { cats: pCats, cat: pCats[0] });
+                }
+            }
+            tg.showAlert(`✅ ${ids.length} ta mahsulot "${cat}" kategoriyasiga qo'shildi!`);
+            document.getElementById('admin-sel-cats').style.display = 'none';
+            exitAdminListSelectionMode();
+        };
 
         function renderAdminProducts() {
             const list     = document.getElementById('admin-products-list');
@@ -1447,7 +1566,7 @@
                         </div>
                         <span style="font-size:18px; color:var(--brand);">▾</span>
                     </div>
-                    <div class="day-group-body" id="${groupId}-body">
+                    <div class="day-group-body ${adminListSelectionMode ? 'open' : ''}" id="${groupId}-body">
                         ${catProds.map(p => renderAdminProductItem(p)).join('')}
                     </div>
                 </div>`;
@@ -1466,13 +1585,28 @@
                         </div>
                         <span style="font-size:18px; color:var(--brand);">▾</span>
                     </div>
-                    <div class="day-group-body" id="catg-other-body">
+                    <div class="day-group-body ${adminListSelectionMode ? 'open' : ''}" id="catg-other-body">
                         ${others.map(p => renderAdminProductItem(p)).join('')}
                     </div>
                 </div>`;
             }
 
             list.innerHTML = html;
+
+            if (!adminListSelectionMode) {
+                list.querySelectorAll('.admin-card').forEach(card => {
+                    const pid = card.dataset.id;
+                    if (pid) {
+                        addLongPress(card, () => {
+                            adminListSelectionMode = true;
+                            adminSelectedProds.clear();
+                            adminSelectedProds.add(pid);
+                            renderAdminProducts();
+                        }, 600);
+                    }
+                });
+            }
+            updateAdminListSelectionUI();
         }
 
         window.saveProduct = async () => {
@@ -1653,7 +1787,7 @@
                 .replace(/<\/li>/gi, '\n')
                 .replace(/<li>/gi, '• ')
                 .replace(/<[^>]*>/g, '')
-                .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/ /g, ' ')
+                .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/ /g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim();
         }
