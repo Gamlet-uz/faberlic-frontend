@@ -16,8 +16,10 @@
         .brand { font-size: 26px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
         .brand .big { font-size: 30px; color: var(--brand); }
         .brand .amp { font-size: 20px; color: #555; }
-        .search-box { background: #efeff4; border-radius: 10px; display: flex; align-items: center; padding: 8px 12px; flex: 1; }
+        .search-box { background: #efeff4; border-radius: 10px; display: flex; align-items: center; padding: 8px 12px; flex: 1; margin-right: 5px; }
         .search-box input { border: none; background: transparent; width: 100%; font-size: 15px; }
+        .fav-header-btn { background: #fdf0fa; border: 1px solid var(--brand-light); border-radius: 10px; padding: 7px 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: 0.2s; flex-shrink: 0; }
+        .fav-header-btn:active { transform: scale(0.9); }
 
         /* KATEGORIYALAR */
         .cats-wrapper { background: white; padding: 12px 15px; border-bottom: 1px solid #eee; overflow-x: auto; white-space: nowrap; scrollbar-width: none; flex-shrink: 0; }
@@ -32,7 +34,7 @@
 
         /* MAHSULOTLAR GRID */
         .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
+        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; position: relative; }
         .product-card img { width: 100%; height: 130px; object-fit: cover; border-radius: 12px; cursor: pointer; }
         .p-title { font-weight: bold; font-size: 15px; margin: 8px 0 4px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .p-price { color: var(--brand); font-weight: 800; font-size: 14px; margin-bottom: 0px; }
@@ -40,6 +42,8 @@
         .add-btn { width: 100%; background: #f0f0f0; border: none; padding: 10px; border-radius: 10px; font-weight: bold; margin-top: auto; cursor: pointer; }
         .counter { display: flex; justify-content: space-between; align-items: center; background: var(--brand); color: white; border-radius: 10px; margin-top: auto; }
         .btn-m { background: none; border: none; color: white; font-size: 18px; padding: 8px 15px; font-weight: bold; cursor: pointer; }
+        .fav-btn { position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.15); font-size: 18px; user-select: none; transition: 0.2s; }
+        .fav-btn:active { transform: scale(0.8); }
 
         /* LIST KARTALAR */
         .list-card { background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
@@ -83,7 +87,7 @@
         .pd-desc { color: #666; line-height: 1.5; margin-top: 20px; font-size: 15px; white-space: pre-wrap; }
 
         /* CUSTOM CONFIRM */
-        .confirm-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 3000; justify-content: center; align-items: center; }
+        .confirm-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 5000; justify-content: center; align-items: center; }
         .confirm-box { background: white; padding: 25px; border-radius: 20px; width: 80%; text-align: center; }
         .confirm-btns { display: flex; gap: 10px; margin-top: 20px; }
         .confirm-btns button { flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; color: white; font-size: 16px; cursor: pointer; }
@@ -135,14 +139,18 @@
         .cat-drag-item.sortable-chosen { box-shadow: 0 4px 15px rgba(139,26,107,0.3); }
         .drag-handle { font-size: 20px; color: var(--gray); margin-right: 10px; }
 
-        /* SOTUVCHI KONTAKT */
+        /* SOTUVCHI KONTAKT VA DEV CARD */
         .seller-contact-card { background: linear-gradient(135deg, var(--brand), var(--brand-light)); color: white; border-radius: 20px; padding: 25px; margin: 15px 0; text-align: center; }
         .seller-contact-card .sc-icon { font-size: 60px; margin-bottom: 10px; }
         .seller-contact-card h2 { margin: 0 0 20px 0; font-size: 22px; }
-        .seller-info-row { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; text-align: left; }
+        .seller-info-row { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer; transition: background 0.2s; }
+        .seller-info-row:active { background: rgba(255,255,255,0.3); }
         .seller-info-row .si-icon { font-size: 22px; }
         .seller-info-row .si-label { font-size: 12px; opacity: 0.8; }
         .seller-info-row .si-value { font-size: 16px; font-weight: 700; word-break: break-all; }
+
+        .dev-card { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; border-radius: 16px; padding: 20px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .dev-card h3 { margin: 0 0 15px 0; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; text-align: center; }
 
         /* ADMIN SETTINGS SECTION */
         .settings-section-title { font-size: 13px; font-weight: 700; color: var(--brand); text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 8px 0; padding-bottom: 6px; border-bottom: 2px solid #f3e0ef; }
@@ -161,9 +169,9 @@
 
         /* PRODUCT CARD SELECTION */
         .products-grid.selection-active .product-card { cursor: pointer; }
-        .product-card { position: relative; }
-        .product-card .select-check { display: none; position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid var(--brand); background: white; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: var(--brand); z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: background 0.15s, color 0.15s; }
+        .product-card .select-check { display: none; position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid var(--brand); background: white; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; color: var(--brand); z-index: 6; box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: background 0.15s, color 0.15s; }
         .products-grid.selection-active .product-card .select-check { display: flex; }
+        .products-grid.selection-active .product-card .fav-btn { display: none; }
         .product-card.p-selected { outline: 3px solid var(--brand); background: #fdf0fa; border-radius: 16px; }
         .product-card.p-selected .select-check { background: var(--brand); color: white; border-color: var(--brand); }
 
@@ -190,7 +198,6 @@
         .irc-card.ok  { border-left: 4px solid #28a745; }
         .irc-card.err { border-left: 4px solid var(--red); }
         .irc-card img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; flex-shrink: 0; }
-        .irc-info {}
         .irc-name  { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
         .irc-price { color: var(--brand); font-weight: 800; font-size: 13px; margin-bottom: 2px; }
         .irc-meta  { font-size: 11px; color: var(--gray); }
@@ -209,6 +216,7 @@
         <div class="search-box">
             <input type="text" id="search-input" placeholder="Mahsulot qidirish..." oninput="filterProducts()">
         </div>
+        <button class="fav-header-btn" onclick="openFavoritesModal()">❤️</button>
     </header>
 
     <div class="view-container">
@@ -262,6 +270,14 @@
         <div class="nav-item" onclick="switchTab('profile', this)"><div class="icon">👤</div><b>Profil</b></div>
     </nav>
 
+    <div id="favorites-modal" class="full-modal" style="z-index: 2005;">
+        <div class="modal-header">
+            <button class="back-btn" onclick="closeModal('favorites-modal')">←</button>
+            <span>Sevimlilar</span>
+        </div>
+        <div id="favorites-list" class="products-grid" style="padding: 15px;"></div>
+    </div>
+
     <div id="product-modal" class="full-modal">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('product-modal')">←</button>
@@ -289,17 +305,18 @@
         <div style="padding: 15px;" id="od-content"></div>
     </div>
 
-    <div id="profile-edit-modal" class="full-modal" style="background: white;">
+    <div id="profile-edit-modal" class="full-modal" style="background: white; z-index: 4000;">
         <div class="modal-header">
-            <button class="back-btn" onclick="closeModal('profile-edit-modal')">←</button>
+            <button class="back-btn" id="profile-edit-back-btn" onclick="closeModal('profile-edit-modal')">←</button>
             <span>Profilni tahrirlash</span>
         </div>
         <div style="padding: 20px;">
-            <label style="font-weight:bold; color:var(--gray);">Ismingiz</label>
+            <p id="profile-warning" style="display:none; color:var(--red); font-size:14px; text-align:center; font-weight:bold;">Tizimdan foydalanish uchun ma'lumotlarni to'ldiring!</p>
+            <label style="font-weight:bold; color:var(--gray);">Ismingiz (Majburiy)</label>
             <input type="text" id="edit-name" class="input-style" placeholder="Ismingiz">
-            <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Telefon raqam (+998)</label>
+            <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Telefon raqam (Majburiy, +998)</label>
             <input type="tel" id="edit-phone" class="input-style" placeholder="70 015 12 23" oninput="formatPhone(this)" maxlength="12">
-            <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Tug'ilgan sana</label>
+            <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Tug'ilgan sana (Majburiy emas)</label>
             <input type="text" id="edit-dob" class="input-style" placeholder="31/12/2000" oninput="formatDOB(this)" maxlength="10">
             <button class="main-btn" onclick="saveProfile()">Saqlash</button>
         </div>
@@ -319,7 +336,7 @@
         </div>
     </div>
 
-    <div id="seller-contact-modal" class="full-modal" style="background: white;">
+    <div id="seller-contact-modal" class="full-modal" style="background: white; z-index: 3000;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('seller-contact-modal')">←</button>
             <span>Sotuvchi bilan bog'lanish</span>
@@ -328,7 +345,7 @@
             <div class="seller-contact-card">
                 <div class="sc-icon">🛍</div>
                 <h2>O&F Shop</h2>
-                <div class="seller-info-row" id="sc-phone-row" style="display:none;">
+                <div class="seller-info-row" id="sc-phone-row" style="display:none;" onclick="if(sellerContact.phone) window.location.href='tel:'+sellerContact.phone.replace(/\\s/g,'')">
                     <div class="si-icon">📞</div>
                     <div>
                         <div class="si-label">Telefon raqam</div>
@@ -338,19 +355,38 @@
                 <div class="seller-info-row" id="sc-telegram-row" style="display:none;">
                     <div class="si-icon">✈️</div>
                     <div>
-                        <div class="si-label">Telegram</div>
+                        <div class="si-label">Telegram (Bosish orqali yozish)</div>
                         <div class="si-value" id="sc-telegram">—</div>
                     </div>
                 </div>
                 <div class="seller-info-row" id="sc-address-row" style="display:none;">
                     <div class="si-icon">📍</div>
                     <div>
-                        <div class="si-label">Manzil</div>
+                        <div class="si-label">Manzil (Xaritani ochish)</div>
                         <div class="si-value" id="sc-address">—</div>
                     </div>
                 </div>
             </div>
-            <p style="text-align:center; color:var(--gray); font-size:14px;">Savol va takliflar uchun biz bilan bog'laning.</p>
+
+            <div class="dev-card" id="dev-card-section" style="display:none;">
+                <h3>🤖 Bot Yaratuvchisi</h3>
+                <div class="seller-info-row dev-info-row" id="dev-phone-row" style="display:none;" onclick="if(sellerContact.devPhone) window.location.href='tel:'+sellerContact.devPhone.replace(/\\s/g,'')">
+                    <div class="si-icon">📱</div>
+                    <div>
+                        <div class="si-label" style="color:#ddd;">Telefon raqam</div>
+                        <div class="si-value" id="dev-phone" style="color:white;">—</div>
+                    </div>
+                </div>
+                <div class="seller-info-row dev-info-row" id="dev-channel-row" style="display:none;">
+                    <div class="si-icon">📢</div>
+                    <div>
+                        <div class="si-label" style="color:#ddd;">Kanal (Kirish)</div>
+                        <div class="si-value" id="dev-channel" style="color:white;">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align:center; color:var(--gray); font-size:14px; margin-top:20px;">Savol va takliflar uchun biz bilan bog'laning.</p>
         </div>
     </div>
 
@@ -385,6 +421,12 @@
                 <input type="text" id="as-seller-telegram" class="input-style" placeholder="@username">
                 <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Manzil / joylashuv</label>
                 <textarea id="as-seller-address" class="input-style" placeholder="Shahar, ko'cha, uy raqami..."></textarea>
+
+                <div class="settings-section-title">🤖 Yaratuvchi ma'lumotlari (Men haqimda)</div>
+                <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Yaratuvchi telefon raqami</label>
+                <input type="text" id="as-dev-phone" class="input-style" placeholder="+998 90 000 00 00">
+                <label style="font-weight:bold; color:var(--gray); margin-top:10px; display:block;">Telegram Kanali</label>
+                <input type="text" id="as-dev-channel" class="input-style" placeholder="@kanal_nomi">
 
                 <button class="main-btn" onclick="saveGlobalSettings()">💾 Saqlash</button>
             </div>
@@ -514,19 +556,22 @@
         let products         = [];
         let filteredProducts = [];
         let cart             = {};
+        let favorites        = [];
         let myOrders         = [];
         let allOrders        = [];
         let admins           = ["5630950142"];
         let categories       = ["Hammasi"];
+        let hiddenCats       = [];
         let currentCat       = "Hammasi";
         let searchQuery      = "";
         let userData         = { phone: "", dob: "" };
         let globalSettings   = { minOrder: 0, feePercent: 3 };
-        let sellerContact    = { phone: "", telegram: "", address: "" };
+        let sellerContact    = { phone: "", telegram: "", address: "", devPhone: "", devChannel: "" };
         let categorySortable = null;
         let isAdmin          = false;
         let selectionMode    = false;
         let selectedProducts = new Set();
+        let isProfileForced  = false;
 
         function addLongPress(el, callback, duration = 600) {
             let timer;
@@ -604,16 +649,23 @@
 
         onSnapshot(doc(db, "settings", "contact"), (docSnap) => {
             if (docSnap.exists()) sellerContact = docSnap.data();
-            else sellerContact = { phone: "", telegram: "", address: "" };
+            else sellerContact = { phone: "", telegram: "", address: "", devPhone: "", devChannel: "" };
             document.getElementById('as-seller-phone').value    = sellerContact.phone || '';
             document.getElementById('as-seller-telegram').value = sellerContact.telegram || '';
             document.getElementById('as-seller-address').value  = sellerContact.address || '';
+            document.getElementById('as-dev-phone').value       = sellerContact.devPhone || '';
+            document.getElementById('as-dev-channel').value     = sellerContact.devChannel || '';
             updateSellerContactModal();
         });
 
         onSnapshot(doc(db, "settings", "categories"), (docSnap) => {
-            if (docSnap.exists()) categories = ["Hammasi", ...docSnap.data().list];
-            else categories = ["Hammasi"];
+            if (docSnap.exists()) {
+                categories = ["Hammasi", ...(docSnap.data().list || [])];
+                hiddenCats = docSnap.data().hidden || [];
+            } else {
+                categories = ["Hammasi"];
+                hiddenCats = [];
+            }
             renderCategoriesUI();
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminCategories();
         });
@@ -622,6 +674,7 @@
             products = [];
             snap.forEach(d => products.push({ id: d.id, ...d.data() }));
             applyFilters();
+            if (document.getElementById('favorites-modal').style.display === 'block') renderFavorites();
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminProducts();
         });
 
@@ -650,21 +703,37 @@
                 userName       = data.name  || userName;
                 userData.phone = data.phone || "";
                 userData.dob   = data.dob   || "";
+                favorites      = data.favorites || [];
             }
             updateProfileView();
+            checkMandatoryProfile();
+            applyFilters();
         });
+
+        function checkMandatoryProfile() {
+            let rawPhone = userData.phone ? userData.phone.replace(/\D/g, '') : '';
+            if (!rawPhone || rawPhone.length < 9 || !userName || userName.trim() === "" || userName === "Foydalanuvchi") {
+                isProfileForced = true;
+                document.getElementById('profile-edit-back-btn').style.display = 'none';
+                document.getElementById('profile-warning').style.display = 'block';
+                openProfileEdit();
+            }
+        }
 
         function renderCategoriesUI() {
             const container = document.getElementById('cats-container');
-            const catsOnly  = categories.filter(c => c !== 'Hammasi');
-
-            container.innerHTML = categories.map(cat =>
+            // User view: filter out hidden categories
+            const visibleCats = categories.filter(c => c === 'Hammasi' || !hiddenCats.includes(c));
+            
+            container.innerHTML = visibleCats.map(cat =>
                 `<button class="cat-btn ${currentCat === cat ? 'active' : ''}" onclick="setCategory('${cat}')">${cat}</button>`
             ).join('');
 
+            const catsOnly  = categories.filter(c => c !== 'Hammasi');
+
             if (isAdmin) {
                 container.querySelectorAll('.cat-btn').forEach((btn, i) => {
-                    const cat = categories[i];
+                    const cat = visibleCats[i];
                     if (cat === 'Hammasi') return;
                     addLongPress(btn, () => {
                         if (!selectionMode) enterSelectionMode(cat);
@@ -708,38 +777,54 @@
             renderMenu();
         }
 
-        window.renderMenu = () => {
-            const list = document.getElementById('products-list');
+        window.toggleFav = async (e, id) => {
+            e.stopPropagation();
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(x => x !== id);
+            } else {
+                favorites.push(id);
+            }
+            // Update UI optimistically
+            applyFilters();
+            if(document.getElementById('favorites-modal').style.display === 'block') renderFavorites();
+            // Save to DB
+            await setDoc(doc(db, "users", userId), { favorites: favorites }, { merge: true });
+        };
 
-            list.innerHTML = filteredProducts.map(p => {
-                const q        = cart[p.id]?.qty || 0;
-                let stockVal   = p.count || '#';
-                let isInfinity = stockVal === '#';
-                let stockNum   = isInfinity ? Infinity : Number(stockVal);
-                let isOut      = !isInfinity && stockNum <= 0;
-                let isSel      = selectedProducts.has(p.id);
+        window.openFavoritesModal = () => {
+            renderFavorites();
+            document.getElementById('favorites-modal').style.display = 'block';
+        };
 
-                if (selectionMode) {
-                    return `
-                    <div class="product-card ${isSel ? 'p-selected' : ''}" data-id="${p.id}"
-                         onclick="toggleProductSelect('${p.id}')"
-                         style="cursor:pointer;${isOut ? 'opacity:0.6;' : ''}">
-                        <div class="select-check">${isSel ? '✓' : ''}</div>
-                        <img src="${p.img || 'https://via.placeholder.com/300'}" style="pointer-events:none;" onerror="this.src='https://via.placeholder.com/300'">
-                        <div class="p-title">${p.name}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <div class="p-price">${Number(p.price).toLocaleString()} so'm</div>
-                            <div class="p-stock" style="color:${isOut ? 'var(--red)' : 'var(--gray)'}">
-                                ${isOut ? 'Tugagan' : (isInfinity ? '∞' : stockNum + ' ta')}
-                            </div>
-                        </div>
-                    </div>`;
-                }
+        window.renderFavorites = () => {
+            const list = document.getElementById('favorites-list');
+            let favProds = products.filter(p => favorites.includes(p.id));
+            if (favProds.length === 0) {
+                list.innerHTML = "<p style='text-align:center; color:var(--gray); margin-top:30px; width:100%; grid-column: span 2; font-weight:bold;'>Sevimlilar ro'yxati bo'sh 💔</p>";
+                return;
+            }
+            list.innerHTML = favProds.map(p => getProductCardHTML(p, false)).join('');
+        };
 
+        function getProductCardHTML(p, isSelMode) {
+            const q        = cart[p.id]?.qty || 0;
+            let stockVal   = p.count || '#';
+            let isInfinity = stockVal === '#';
+            let stockNum   = isInfinity ? Infinity : Number(stockVal);
+            let isOut      = !isInfinity && stockNum <= 0;
+            let isSel      = selectedProducts.has(p.id);
+            let isFav      = favorites.includes(p.id);
+
+            let favBtnHtml = `<div class="fav-btn" onclick="toggleFav(event, '${p.id}')">${isFav ? '❤️' : '🤍'}</div>`;
+
+            if (isSelMode) {
                 return `
-                <div class="product-card" data-id="${p.id}" style="${isOut ? 'opacity:0.6;' : ''}">
-                    <div class="select-check"></div>
-                    <img src="${p.img || 'https://via.placeholder.com/300'}" onclick="openProductModal('${p.id}')" onerror="this.src='https://via.placeholder.com/300'">
+                <div class="product-card ${isSel ? 'p-selected' : ''}" data-id="${p.id}"
+                     onclick="toggleProductSelect('${p.id}')"
+                     style="cursor:pointer;${isOut ? 'opacity:0.6;' : ''}">
+                    ${favBtnHtml}
+                    <div class="select-check">${isSel ? '✓' : ''}</div>
+                    <img src="${p.img || 'https://via.placeholder.com/300'}" style="pointer-events:none;" onerror="this.src='https://via.placeholder.com/300'">
                     <div class="p-title">${p.name}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <div class="p-price">${Number(p.price).toLocaleString()} so'm</div>
@@ -747,14 +832,33 @@
                             ${isOut ? 'Tugagan' : (isInfinity ? '∞' : stockNum + ' ta')}
                         </div>
                     </div>
-                    ${isOut
-                        ? `<button class="add-btn" disabled style="background:#ccc; color:#666;">Sotib bo'lingan</button>`
-                        : (q > 0
-                            ? `<div class="counter"><button class="btn-m" onclick="updateCart('${p.id}',-1)">-</button><span>${q}</span><button class="btn-m" onclick="updateCart('${p.id}',1)">+</button></div>`
-                            : `<button class="add-btn" onclick="updateCart('${p.id}',1)">Savatga</button>`)
-                    }
                 </div>`;
-            }).join('');
+            }
+
+            return `
+            <div class="product-card" data-id="${p.id}" style="${isOut ? 'opacity:0.6;' : ''}">
+                ${favBtnHtml}
+                <div class="select-check"></div>
+                <img src="${p.img || 'https://via.placeholder.com/300'}" onclick="openProductModal('${p.id}')" onerror="this.src='https://via.placeholder.com/300'">
+                <div class="p-title">${p.name}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div class="p-price">${Number(p.price).toLocaleString()} so'm</div>
+                    <div class="p-stock" style="color:${isOut ? 'var(--red)' : 'var(--gray)'}">
+                        ${isOut ? 'Tugagan' : (isInfinity ? '∞' : stockNum + ' ta')}
+                    </div>
+                </div>
+                ${isOut
+                    ? `<button class="add-btn" disabled style="background:#ccc; color:#666;">Sotib bo'lingan</button>`
+                    : (q > 0
+                        ? `<div class="counter"><button class="btn-m" onclick="updateCart('${p.id}',-1)">-</button><span>${q}</span><button class="btn-m" onclick="updateCart('${p.id}',1)">+</button></div>`
+                        : `<button class="add-btn" onclick="updateCart('${p.id}',1)">Savatga</button>`)
+                }
+            </div>`;
+        }
+
+        window.renderMenu = () => {
+            const list = document.getElementById('products-list');
+            list.innerHTML = filteredProducts.map(p => getProductCardHTML(p, selectionMode)).join('');
 
             if (isAdmin && !selectionMode) {
                 list.querySelectorAll('.product-card').forEach(card => {
@@ -765,7 +869,6 @@
                     }, 600);
                 });
             }
-
             updateBadge();
         };
 
@@ -992,9 +1095,12 @@
         window.openCheckout = () => {
             let rawPhone = userData.phone ? userData.phone.replace(/\D/g, '') : '';
             if (!rawPhone || rawPhone.length < 9 || !userName || userName.trim() === "" || userName === "Foydalanuvchi") {
-                tg.showAlert("Iltimos, ismingiz va telefon raqamingizni kiriting!");
-                switchTab('profile', document.querySelectorAll('.nav-item')[3]);
-                openProfileEdit(); return;
+                tg.showAlert("Iltimos, ismingiz va telefon raqamingizni to'liq kiriting!");
+                isProfileForced = true;
+                document.getElementById('profile-edit-back-btn').style.display = 'none';
+                document.getElementById('profile-warning').style.display = 'block';
+                openProfileEdit(); 
+                return;
             }
             let subtotal  = Object.values(cart).reduce((a, b) => a + (b.price * b.qty), 0);
             let feeAmount = Math.round(subtotal * (Number(globalSettings.feePercent || 0) / 100));
@@ -1041,19 +1147,40 @@
             document.getElementById('prof-phone').innerText = userData.phone ? "+998 " + userData.phone : "Kiritilmagan";
             document.getElementById('prof-dob').innerText   = userData.dob || "Kiritilmagan";
         }
+
         window.openProfileEdit = () => {
-            document.getElementById('edit-name').value  = userName;
+            document.getElementById('edit-name').value  = userName !== "Foydalanuvchi" ? userName : "";
             document.getElementById('edit-phone').value = userData.phone;
             document.getElementById('edit-dob').value   = userData.dob;
             document.getElementById('profile-edit-modal').style.display = 'block';
         };
+
         window.saveProfile = async () => {
-            userName       = document.getElementById('edit-name').value;
-            userData.phone = document.getElementById('edit-phone').value;
-            userData.dob   = document.getElementById('edit-dob').value;
+            let newName = document.getElementById('edit-name').value;
+            let newPhone = document.getElementById('edit-phone').value;
+            let newDob = document.getElementById('edit-dob').value;
+            
+            let rawPhone = newPhone.replace(/\D/g, '');
+            if (!newName || newName.trim() === "" || newName === "Foydalanuvchi") {
+                return tg.showAlert("Ismingizni kiriting!");
+            }
+            if (!rawPhone || rawPhone.length < 9) {
+                return tg.showAlert("Telefon raqamingizni to'liq kiriting!");
+            }
+
+            userName       = newName;
+            userData.phone = newPhone;
+            userData.dob   = newDob;
+
             await setDoc(doc(db, "users", userId), { name: userName, phone: userData.phone, dob: userData.dob }, { merge: true });
-            updateProfileView(); closeModal('profile-edit-modal');
+            updateProfileView(); 
+
+            isProfileForced = false;
+            document.getElementById('profile-edit-back-btn').style.display = 'block';
+            document.getElementById('profile-warning').style.display = 'none';
+            closeModal('profile-edit-modal');
         };
+
         window.formatPhone = (el) => {
             let val = el.value.replace(/\D/g, '').substring(0, 9);
             let res = "";
@@ -1063,6 +1190,7 @@
             if (val.length > 7) res += " " + val.substring(7, 9);
             el.value = res;
         };
+
         window.formatDOB = (el) => {
             let val = el.value.replace(/\D/g, '').substring(0, 8);
             let res = "";
@@ -1076,6 +1204,9 @@
             const phoneRow    = document.getElementById('sc-phone-row');
             const telegramRow = document.getElementById('sc-telegram-row');
             const addressRow  = document.getElementById('sc-address-row');
+            const devSection  = document.getElementById('dev-card-section');
+            const devPhoneRow = document.getElementById('dev-phone-row');
+            const devChanRow  = document.getElementById('dev-channel-row');
 
             if (sellerContact.phone) {
                 document.getElementById('sc-phone').innerText = sellerContact.phone;
@@ -1085,12 +1216,36 @@
             if (sellerContact.telegram) {
                 document.getElementById('sc-telegram').innerText = sellerContact.telegram;
                 telegramRow.style.display = 'flex';
+                telegramRow.onclick = () => {
+                    let username = sellerContact.telegram.replace('@', '');
+                    tg.openTelegramLink('https://t.me/' + username);
+                };
             } else { telegramRow.style.display = 'none'; }
 
             if (sellerContact.address) {
                 document.getElementById('sc-address').innerText = sellerContact.address;
                 addressRow.style.display = 'flex';
+                addressRow.onclick = () => {
+                    tg.openLink('https://maps.google.com/?q=' + encodeURIComponent(sellerContact.address));
+                };
             } else { addressRow.style.display = 'none'; }
+
+            if (sellerContact.devPhone || sellerContact.devChannel) {
+                devSection.style.display = 'block';
+                if(sellerContact.devPhone) {
+                    document.getElementById('dev-phone').innerText = sellerContact.devPhone;
+                    devPhoneRow.style.display = 'flex';
+                } else { devPhoneRow.style.display = 'none'; }
+                
+                if(sellerContact.devChannel) {
+                    document.getElementById('dev-channel').innerText = sellerContact.devChannel;
+                    devChanRow.style.display = 'flex';
+                    devChanRow.onclick = () => {
+                        let channel = sellerContact.devChannel.replace('@', '');
+                        tg.openTelegramLink('https://t.me/' + channel);
+                    };
+                } else { devChanRow.style.display = 'none'; }
+            } else { devSection.style.display = 'none'; }
         }
 
         window.openSellerContact = () => {
@@ -1131,8 +1286,11 @@
             let phone    = document.getElementById('as-seller-phone').value.trim();
             let telegram = document.getElementById('as-seller-telegram').value.trim();
             let address  = document.getElementById('as-seller-address').value.trim();
+            let devPhone = document.getElementById('as-dev-phone').value.trim();
+            let devChannel = document.getElementById('as-dev-channel').value.trim();
+
             await setDoc(doc(db, "settings", "general"), { minOrder: min, feePercent: fee });
-            await setDoc(doc(db, "settings", "contact"), { phone, telegram, address });
+            await setDoc(doc(db, "settings", "contact"), { phone, telegram, address, devPhone, devChannel });
             tg.showAlert("✅ Sozlamalar saqlandi!");
         };
 
@@ -1394,15 +1552,20 @@
             const catsOnly = categories.filter(c => c !== 'Hammasi');
             if (catsOnly.length === 0) { list.innerHTML = "<p style='color:var(--gray);'>Kategoriya yo'q.</p>"; return; }
 
-            list.innerHTML = catsOnly.map(c => `
+            list.innerHTML = catsOnly.map(c => {
+                let isHidden = hiddenCats.includes(c);
+                return `
                 <div class="list-card cat-drag-item" data-cat="${c}" style="padding:12px 15px; margin-bottom:8px;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <span class="drag-handle">☰</span>
-                        <b>${c}</b>
+                        <b style="color:${isHidden ? 'var(--gray)' : 'var(--text)'}">${c}</b>
                     </div>
-                    <button style="background:none; border:none; color:var(--red); font-size:22px; font-weight:bold; line-height:1; cursor:pointer;" onclick="removeCategory('${c}')">✕</button>
-                </div>
-            `).join('');
+                    <div style="display:flex; gap: 15px; align-items:center;">
+                        <button style="background:none; border:none; font-size:22px; cursor:pointer;" onclick="toggleCatVisibility('${c}')" title="Mijozlarga ko'rsatish/yashirish">${isHidden ? '👁️‍🗨️' : '👁️'}</button>
+                        <button style="background:none; border:none; color:var(--red); font-size:22px; font-weight:bold; line-height:1; cursor:pointer;" onclick="removeCategory('${c}')">✕</button>
+                    </div>
+                </div>`;
+            }).join('');
 
             if (categorySortable) { try { categorySortable.destroy(); } catch(e){} }
 
@@ -1414,7 +1577,7 @@
                     handle:       '.drag-handle',
                     onEnd: async () => {
                         let newOrder = [...list.querySelectorAll('.cat-drag-item')].map(el => el.dataset.cat);
-                        await setDoc(doc(db, "settings", "categories"), { list: newOrder });
+                        await setDoc(doc(db, "settings", "categories"), { list: newOrder, hidden: hiddenCats });
                     }
                 });
             }
@@ -1425,14 +1588,21 @@
             if (!catName || categories.includes(catName)) return;
             let catsOnly = categories.filter(c => c !== 'Hammasi');
             catsOnly.push(catName);
-            await setDoc(doc(db, "settings", "categories"), { list: catsOnly });
+            await setDoc(doc(db, "settings", "categories"), { list: catsOnly, hidden: hiddenCats });
             document.getElementById('new-cat-input').value = "";
             tg.showAlert("✅ Qo'shildi!");
         };
 
         window.removeCategory = async (c) => {
             let catsOnly = categories.filter(x => x !== 'Hammasi' && x !== c);
-            await setDoc(doc(db, "settings", "categories"), { list: catsOnly });
+            let newHidden = hiddenCats.filter(x => x !== c);
+            await setDoc(doc(db, "settings", "categories"), { list: catsOnly, hidden: newHidden });
+        };
+
+        window.toggleCatVisibility = async (c) => {
+            let newHidden = hiddenCats.includes(c) ? hiddenCats.filter(x => x !== c) : [...hiddenCats, c];
+            let catsOnly = categories.filter(x => x !== 'Hammasi');
+            await setDoc(doc(db, "settings", "categories"), { list: catsOnly, hidden: newHidden });
         };
 
         function renderAdminUsers() {
@@ -1475,7 +1645,6 @@
         const FABERLIC_API_PARAMS = "baseStore=UZB_9300&priceGroup=PRIV&nextPeriodPriceEnabled=false&language=uz";
         const FABERLIC_IMG_BASE   = "https://faberlic.com/medias/";
 
-        // HTML teglarini tozalash
         function stripHtmlImport(html) {
             if (!html) return '';
             return html
@@ -1484,7 +1653,7 @@
                 .replace(/<\/li>/gi, '\n')
                 .replace(/<li>/gi, '• ')
                 .replace(/<[^>]*>/g, '')
-                .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+                .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/ /g, ' ')
                 .replace(/\n{3,}/g, '\n\n')
                 .trim();
         }
@@ -1637,7 +1806,13 @@
             document.getElementById('product-modal').style.display = 'block';
         };
 
-        window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
+        window.closeModal = (id) => { 
+            if (id === 'profile-edit-modal' && isProfileForced) {
+                tg.showAlert("Tizimdan foydalanish uchun ma'lumotlarni to'ldiring!");
+                return;
+            }
+            document.getElementById(id).style.display = 'none'; 
+        };
     </script>
 </body>
 </html>
