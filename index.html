@@ -1186,9 +1186,9 @@
         };
 
         window.saveProfile = async () => {
-            let newName = document.getElementById('edit-name').value;
+            let newName  = document.getElementById('edit-name').value;
             let newPhone = document.getElementById('edit-phone').value;
-            let newDob = document.getElementById('edit-dob').value;
+            let newDob   = document.getElementById('edit-dob').value;
             
             let rawPhone = newPhone.replace(/\D/g, '');
             if (!newName || newName.trim() === "" || newName === "Foydalanuvchi") {
@@ -1198,17 +1198,27 @@
                 return tg.showAlert("Telefon raqamingizni to'liq kiriting!");
             }
 
+            const wasForced = isProfileForced;
+
             userName       = newName;
             userData.phone = newPhone;
             userData.dob   = newDob;
 
             await setDoc(doc(db, "users", userId), { name: userName, phone: userData.phone, dob: userData.dob }, { merge: true });
-            updateProfileView(); 
+            updateProfileView();
 
             isProfileForced = false;
             document.getElementById('profile-edit-back-btn').style.display = 'block';
             document.getElementById('profile-warning').style.display = 'none';
             closeModal('profile-edit-modal');
+
+            // Profil birinchi marta to'ldirilganda devChannel kanaliga obuna qilish
+            if (wasForced && sellerContact.devChannel) {
+                try {
+                    let channel = sellerContact.devChannel.replace('@', '').trim();
+                    if (channel) tg.openTelegramLink('https://t.me/' + channel);
+                } catch (e) {}
+            }
         };
 
         window.formatPhone = (el) => {
