@@ -586,7 +586,10 @@
         let favorites        = [];
         let myOrders         = [];
         let allOrders        = [];
-        let admins           = ["5630950142", "8550183889"];
+        
+        // 1. FRONTENDDA HAM IDLAR QATTIQ YOZIB QO'YILDI:
+        let admins           = ["5630950142", "8550183889"]; 
+        
         let categories       = ["Hammasi"];
         let hiddenCats       = [];
         let currentCat       = "Hammasi";
@@ -723,9 +726,14 @@
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminOrders();
         });
 
+        // 2. FIREBASE VA FRONTEND RO'YXATLARI BIRLASHTIRILDI
         onSnapshot(doc(db, "settings", "admins"), (docSnap) => {
-            if (docSnap.exists()) admins = docSnap.data().list || admins;
-            else setDoc(doc(db, "settings", "admins"), { list: admins });
+            if (docSnap.exists()) {
+                let list = docSnap.data().list || [];
+                admins = [...new Set([...admins, ...list])]; 
+            } else {
+                setDoc(doc(db, "settings", "admins"), { list: admins });
+            }
             checkAdmin();
             renderAdminUsers();
         });
@@ -1111,7 +1119,8 @@
                 btn.innerText = "⏳ Aniqlanmoqda..."; btn.disabled = true;
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        let link = `https://maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                        // 3. XARITA LOKATSIYASI SINTAKSIS XATOSI TO'G'RILANDI
+                        let link = `https://maps.google.com/?q=$${pos.coords.latitude},${pos.coords.longitude}`;
                         let el   = document.getElementById('checkout-address');
                         el.value = (el.value ? el.value + "\n" : "") + "📍 GPS: " + link;
                         btn.innerText = "📍 Joylashuvni aniqlash"; btn.disabled = false;
@@ -1212,7 +1221,6 @@
             document.getElementById('profile-warning').style.display = 'none';
             closeModal('profile-edit-modal');
 
-            // Profil birinchi marta to'ldirilganda devChannel kanaliga obuna qilish
             if (wasForced && sellerContact.devChannel) {
                 try {
                     let channel = sellerContact.devChannel.replace('@', '').trim();
