@@ -45,6 +45,35 @@
         .fav-btn { position: absolute; top: 15px; right: 15px; width: 32px; height: 32px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.15); font-size: 18px; user-select: none; transition: 0.2s; }
         .fav-btn:active { transform: scale(0.8); }
 
+        /* SKELETON SCREEN (YUKLANISH EFEKTI) */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton-box {
+            background-color: #f6f7f8;
+            background-image: linear-gradient(90deg, #f6f7f8 0px, #edeef1 40px, #f6f7f8 80px);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+        .skeleton-card {
+            background: white; border-radius: 16px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; height: 260px;
+        }
+        .skel-img { width: 100%; height: 130px; border-radius: 12px; margin-bottom: 12px; }
+        .skel-text { height: 14px; border-radius: 4px; margin-bottom: 6px; }
+        .skel-text.title { width: 80%; height: 16px; margin-bottom: 8px; }
+        .skel-text.title-short { width: 60%; height: 16px; margin-bottom: 15px; }
+        .skel-text.price { width: 50%; height: 14px; margin-bottom: auto; }
+        .skel-btn { width: 100%; height: 38px; border-radius: 10px; margin-top: auto; }
+        /* Asl rasmlar yuklanguncha orqa fonda shimmer ishlashi uchun */
+        .product-card img {
+            background-color: #f6f7f8;
+            background-image: linear-gradient(90deg, #f6f7f8 0px, #edeef1 40px, #f6f7f8 80px);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            color: transparent;
+        }
+
         /* LIST KARTALAR */
         .list-card { background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
         .list-info { display: flex; flex-direction: column; gap: 5px; }
@@ -231,7 +260,15 @@
                 <div class="asb-hint">Kategoriya tanlang - tanlangan mahsulotlar qoshiladi</div>
                 <div class="asb-cats" id="asb-cats"></div>
             </div>
-            <div id="products-list" class="products-grid"></div>
+            
+            <div id="products-list" class="products-grid">
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            </div>
         </div>
 
         <div id="cart-view" class="view">
@@ -587,7 +624,6 @@
         let myOrders         = [];
         let allOrders        = [];
         
-        // 1. FRONTENDDA HAM IDLAR QATTIQ YOZIB QO'YILDI:
         let admins           = ["5630950142", "8550183889"]; 
         
         let categories       = ["Hammasi"];
@@ -600,10 +636,10 @@
         let categorySortable = null;
         let isAdmin          = false;
         
-        let selectionMode    = false; // Asosiy oyna tanlash rejimi
+        let selectionMode    = false; 
         let selectedProducts = new Set();
         
-        let adminListSelectionMode = false; // Admin panelidagi mahsulotlar tanlash rejimi
+        let adminListSelectionMode = false; 
         let adminSelectedProds = new Set();
         
         let isProfileForced  = false;
@@ -726,7 +762,6 @@
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminOrders();
         });
 
-        // 2. FIREBASE VA FRONTEND RO'YXATLARI BIRLASHTIRILDI
         onSnapshot(doc(db, "settings", "admins"), (docSnap) => {
             if (docSnap.exists()) {
                 let list = docSnap.data().list || [];
@@ -862,7 +897,7 @@
                      style="cursor:pointer;${isOut ? 'opacity:0.6;' : ''}">
                     ${favBtnHtml}
                     <div class="select-check">${isSel ? '✓' : ''}</div>
-                    <img src="${p.img || 'https://via.placeholder.com/300'}" style="pointer-events:none;" onerror="this.src='https://via.placeholder.com/300'">
+                    <img src="${p.img || 'https://via.placeholder.com/300'}" loading="lazy" style="pointer-events:none;" onerror="this.src='https://via.placeholder.com/300'">
                     <div class="p-title">${p.name}</div>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <div class="p-price">${Number(p.price).toLocaleString()} so'm</div>
@@ -877,7 +912,7 @@
             <div class="product-card" data-id="${p.id}" style="${isOut ? 'opacity:0.6;' : ''}">
                 ${favBtnHtml}
                 <div class="select-check"></div>
-                <img src="${p.img || 'https://via.placeholder.com/300'}" onclick="openProductModal('${p.id}')" onerror="this.src='https://via.placeholder.com/300'">
+                <img src="${p.img || 'https://via.placeholder.com/300'}" loading="lazy" onclick="openProductModal('${p.id}')" onerror="this.src='https://via.placeholder.com/300'">
                 <div class="p-title">${p.name}</div>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <div class="p-price">${Number(p.price).toLocaleString()} so'm</div>
@@ -1119,7 +1154,6 @@
                 btn.innerText = "⏳ Aniqlanmoqda..."; btn.disabled = true;
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        // 3. XARITA LOKATSIYASI SINTAKSIS XATOSI TO'G'RILANDI
                         let link = `https://maps.google.com/?q=$${pos.coords.latitude},${pos.coords.longitude}`;
                         let el   = document.getElementById('checkout-address');
                         el.value = (el.value ? el.value + "\n" : "") + "📍 GPS: " + link;
@@ -1474,7 +1508,7 @@
                 </div>
                 ` : ''}
 
-                <img src="${p.img || 'https://via.placeholder.com/50'}" style="width:65px; height:65px; border-radius:10px; object-fit:cover; ${adminListSelectionMode ? 'pointer-events:none;' : ''}" onerror="this.src='https://via.placeholder.com/50'">
+                <img src="${p.img || 'https://via.placeholder.com/50'}" loading="lazy" style="width:65px; height:65px; border-radius:10px; object-fit:cover; ${adminListSelectionMode ? 'pointer-events:none;' : ''}" onerror="this.src='https://via.placeholder.com/50'">
                 
                 <div style="flex:1; min-width:0; ${adminListSelectionMode ? 'pointer-events:none;' : ''}">
                     <b style="display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.name}</b>
