@@ -262,7 +262,13 @@
             </div>
             
             <div id="products-list" class="products-grid">
-                </div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            </div>
         </div>
 
         <div id="cart-view" class="view">
@@ -839,6 +845,11 @@
         window.filterProducts = () => { searchQuery = document.getElementById('search-input').value.toLowerCase(); applyFilters(); };
 
         function applyFilters() {
+            // Mahsulotlar yuklanmagan bo'lsa — faqat skeleton ko'rsat, filter qilma
+            if (!isProductsLoaded) {
+                renderMenu();
+                return;
+            }
             filteredProducts = products
                 .filter(p => {
                     let pCats    = p.cats || (p.cat ? [p.cat] : []);
@@ -927,23 +938,25 @@
             </div>`;
         }
 
+        const SKELETON_HTML = `
+            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+        `;
+
         window.renderMenu = () => {
             const list = document.getElementById('products-list');
 
-            // MAHSULOTLAR YUKLANMAGAN BO'LSA DOIM SKELETON KO'RSATISH
+            // MAHSULOTLAR HALI YUKLANMAGAN — SKELETON KO'RSAT
             if (!isProductsLoaded) {
-                list.innerHTML = `
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                `;
+                list.innerHTML = SKELETON_HTML;
                 return;
             }
 
-            // AGAR MAHSULOTLAR BO'SH BO'LSA
+            // YUKLANIB BO'LDI — ENDI BO'SH NATIJANI TEKSHIR
             if (filteredProducts.length === 0) {
                 list.innerHTML = "<div style='text-align:center; padding: 30px; grid-column: span 2; color:var(--gray);'>Bu kategoriyada mahsulot yo'q 😕</div>";
                 updateBadge();
