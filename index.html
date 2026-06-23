@@ -262,13 +262,7 @@
             </div>
             
             <div id="products-list" class="products-grid">
-                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-            </div>
+                </div>
         </div>
 
         <div id="cart-view" class="view">
@@ -747,7 +741,10 @@
             products = [];
             snap.forEach(d => products.push({ id: d.id, ...d.data() }));
             
-            isProductsLoaded = true; // MAHSULOTLAR YUKLANDI!
+            // Faqat rostakamiga mahsulot tushgandagina "yuklandi" deb hisoblaymiz
+            if (products.length > 0) {
+                isProductsLoaded = true; 
+            }
             
             applyFilters();
             if (document.getElementById('favorites-modal').style.display === 'block') renderFavorites();
@@ -845,11 +842,6 @@
         window.filterProducts = () => { searchQuery = document.getElementById('search-input').value.toLowerCase(); applyFilters(); };
 
         function applyFilters() {
-            // Mahsulotlar yuklanmagan bo'lsa — faqat skeleton ko'rsat, filter qilma
-            if (!isProductsLoaded) {
-                renderMenu();
-                return;
-            }
             filteredProducts = products
                 .filter(p => {
                     let pCats    = p.cats || (p.cat ? [p.cat] : []);
@@ -938,27 +930,25 @@
             </div>`;
         }
 
-        const SKELETON_HTML = `
-            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-            <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-        `;
-
         window.renderMenu = () => {
             const list = document.getElementById('products-list');
 
-            // MAHSULOTLAR HALI YUKLANMAGAN — SKELETON KO'RSAT
+            // MAHSULOTLAR YUKLANMAGAN BO'LSA DOIM SKELETON KO'RSATISH (BO'SH XABAR CHIQMAYDI)
             if (!isProductsLoaded) {
-                list.innerHTML = SKELETON_HTML;
+                list.innerHTML = `
+                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
+                `;
                 return;
             }
 
-            // YUKLANIB BO'LDI — ENDI BO'SH NATIJANI TEKSHIR
+            // AGAR FILTRDAN KEYIN HAM HECH NARSA QOLMASA, UMUMAN HECH NARSA CHIQARMAYMIZ
             if (filteredProducts.length === 0) {
-                list.innerHTML = "<div style='text-align:center; padding: 30px; grid-column: span 2; color:var(--gray);'>Bu kategoriyada mahsulot yo'q 😕</div>";
+                list.innerHTML = ""; 
                 updateBadge();
                 return;
             }
