@@ -65,6 +65,14 @@
         .skel-text.title-short { width: 60%; height: 16px; margin-bottom: 15px; }
         .skel-text.price { width: 50%; height: 14px; margin-bottom: auto; }
         .skel-btn { width: 100%; height: 38px; border-radius: 10px; margin-top: auto; }
+        /* Asl rasmlar yuklanguncha orqa fonda shimmer ishlashi uchun */
+        .product-card img {
+            background-color: #f6f7f8;
+            background-image: linear-gradient(90deg, #f6f7f8 0px, #edeef1 40px, #f6f7f8 80px);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            color: transparent;
+        }
 
         /* LIST KARTALAR */
         .list-card { background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
@@ -254,8 +262,7 @@
             </div>
             
             <div id="products-list" class="products-grid">
-                <!-- Javascript orqali keladigan skeleton o'rni -->
-            </div>
+                </div>
         </div>
 
         <div id="cart-view" class="view">
@@ -606,6 +613,7 @@
 
         let products         = [];
         let filteredProducts = [];
+        let isProductsLoaded = false; // MUHIM: Yuklanish tugaganini tekshirish uchun bayroq
         let cart             = {};
         let favorites        = [];
         let myOrders         = [];
@@ -630,7 +638,6 @@
         let adminSelectedProds = new Set();
         
         let isProfileForced  = false;
-        let isProductsLoaded = false; // MAHSULOTLAR KELGANINI TEKSHIRUVCHI FLAG
 
         function addLongPress(el, callback, duration = 600) {
             let timer;
@@ -731,15 +738,10 @@
         });
 
         onSnapshot(collection(db, "products"), (snap) => {
-            // FIREBASE KESHIDAN BO'SH MA'LUMOT KELGANDA SKELETONNI O'CHIRMASLIK:
-            if (snap.metadata?.fromCache && snap.empty) {
-                return; // Haqiqiy internetdan/serverdan kutamiz
-            }
-
             products = [];
             snap.forEach(d => products.push({ id: d.id, ...d.data() }));
             
-            isProductsLoaded = true; // MAHSULOTLAR ANIQ KELDI!
+            isProductsLoaded = true; // MAHSULOTLAR YUKLANDI!
             
             applyFilters();
             if (document.getElementById('favorites-modal').style.display === 'block') renderFavorites();
@@ -927,8 +929,8 @@
 
         window.renderMenu = () => {
             const list = document.getElementById('products-list');
-            
-            // AGAR MAHSULOTLAR HALI BAZADAN KELMAGAN BO'LSA SKELETON CHIQARAMIZ
+
+            // MAHSULOTLAR YUKLANMAGAN BO'LSA DOIM SKELETON KO'RSATISH
             if (!isProductsLoaded) {
                 list.innerHTML = `
                     <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
@@ -941,14 +943,13 @@
                 return;
             }
 
-            // MAHSULOTLAR KELDI, LEKIN RO'YXAT BO'SH BO'LSA
+            // AGAR MAHSULOTLAR BO'SH BO'LSA
             if (filteredProducts.length === 0) {
-                 list.innerHTML = "<div style='grid-column: span 2; text-align:center; color:var(--gray); padding-top:20px; font-weight:bold;'>Mahsulotlar topilmadi.</div>";
-                 updateBadge();
-                 return;
+                list.innerHTML = "<div style='text-align:center; padding: 30px; grid-column: span 2; color:var(--gray);'>Bu kategoriyada mahsulot yo'q 😕</div>";
+                updateBadge();
+                return;
             }
 
-            // NORMAL MAHSULOTLARNI CHIQARISH
             list.innerHTML = filteredProducts.map(p => getProductCardHTML(p, selectionMode)).join('');
 
             if (isAdmin && !selectionMode) {
@@ -1214,7 +1215,10 @@
                 let total      = subtotal + feeAmount;
                 let orderNum   = Math.floor(10000 + Math.random() * 90000);
                 let orderObj   = { orderNum, userId, userName, phone: userData.phone, address, items, total, feePercent, feeAmount, subtotal, date: Date.now(), hideForUser: false, status: "pending" };
-                await addDoc(collection(db, "orders"), orderObj);
+                
+                // BAZAGA YOZAMIZ VA ID'SINI OLAMIZ
+                let docRef = await addDoc(collection(db, "orders"), orderObj);
+                
                 for (let item of items) {
                     let p = products.find(x => x.id === item.id);
                     if (p && (p.count || '#') !== '#') {
@@ -1222,7 +1226,10 @@
                         await updateDoc(doc(db, "products", p.id), { count: newCount.toString() });
                     }
                 }
-                tg.sendData(JSON.stringify({ action: "new_order", ...orderObj }));
+                
+                // BOTGA MA'LUMOT YUBORISHDA ID HAM QO'SHILDI
+                tg.sendData(JSON.stringify({ action: "new_order", id: docRef.id, ...orderObj }));
+                
                 cart = {}; renderMenu(); renderCart(); closeModal('checkout-modal');
                 switchTab('orders', document.querySelectorAll('.nav-item')[2]);
                 tg.showAlert("Qabul qilindi! Raqam: #" + orderNum);
