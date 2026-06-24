@@ -596,7 +596,7 @@
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let userId   = tg.initDataUnsafe?.user?.id?.toString() || "123456789";
+        let userId   = (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) ? String(tg.initDataUnsafe.user.id) : "123456789";
         let userName = tg.initDataUnsafe?.user?.first_name || "Foydalanuvchi";
 
         // --- TRUE SERVER-SIDE PAGINATION VA FILTR O'ZGARUVCHILARI ---
@@ -1275,7 +1275,22 @@
                 let feeAmount  = Math.round(subtotal * (feePercent / 100));
                 let total      = subtotal + feeAmount;
                 let orderNum   = Math.floor(10000 + Math.random() * 90000);
-                let orderObj   = { orderNum, userId, userName, phone: userData.phone, address, items, total, feePercent, feeAmount, subtotal, date: Date.now(), hideForUser: false, status: "pending" };
+                let orderObj   = { 
+                    orderNum, 
+                    userId: String(userId), 
+                    userName: String(userName), 
+                    phone: String(userData.phone), 
+                    address: String(address), 
+                    items, 
+                    total, 
+                    feePercent, 
+                    feeAmount, 
+                    subtotal, 
+                    date: Date.now(), 
+                    hideForUser: false, 
+                    status: "pending",
+                    botProcessed: false 
+                };
                 
                 let docRef = await addDoc(collection(db, "orders"), orderObj);
                 
@@ -1287,13 +1302,14 @@
                     }
                 }
                 
-                tg.sendData(JSON.stringify({ action: "new_order", id: docRef.id, ...orderObj }));
+                // Server.js avtomatik Firestoreni eshitib botga yozadi, shuning uchun tg.sendData(...) O'CHIRILDI.
                 
                 cart = {}; applyFilters(); renderCart(); closeModal('checkout-modal');
                 switchTab('orders', document.querySelectorAll('.nav-item')[2]);
-                tg.showAlert("Qabul qilindi! Raqam: #" + orderNum);
+                tg.showAlert("✅ Qabul qilindi! Raqam: #" + orderNum);
             } catch (error) {
-                tg.showAlert("Xatolik yuz berdi.");
+                console.error("Xatolik:", error);
+                tg.showAlert("Xatolik yuz berdi. Internetni tekshiring!");
             } finally {
                 btn.disabled = false; btn.innerText = "Tasdiqlash va Yuborish";
             }
