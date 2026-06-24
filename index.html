@@ -28,7 +28,7 @@
         .cat-btn.active { background: var(--brand); color: white; }
 
         /* ASOSIY OYNALAR */
-        .view-container { flex: 1; overflow-y: auto; position: relative; }
+        .view-container { flex: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; }
         .view { display: none; padding: 15px; padding-bottom: 100px; min-height: 100%; }
         .view.active { display: block; }
 
@@ -65,7 +65,6 @@
         .skel-text.title-short { width: 60%; height: 16px; margin-bottom: 15px; }
         .skel-text.price { width: 50%; height: 14px; margin-bottom: auto; }
         .skel-btn { width: 100%; height: 38px; border-radius: 10px; margin-top: auto; }
-        /* Asl rasmlar yuklanguncha orqa fonda shimmer ishlashi uchun */
         .product-card img {
             background-color: #f6f7f8;
             background-image: linear-gradient(90deg, #f6f7f8 0px, #edeef1 40px, #f6f7f8 80px);
@@ -102,7 +101,7 @@
         .back-btn { background: none; border: none; font-size: 24px; color: var(--text); padding: 0; cursor: pointer; }
 
         .main-btn { background: var(--brand); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 15px; transition: background 0.2s; }
-        .main-btn:disabled { background: var(--gray); cursor: not-allowed; }
+        .main-btn:disabled { background: var(--gray); cursor: not-allowed; opacity: 0.7; }
         .danger-btn { background: var(--red); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; transition: opacity 0.2s; }
         .danger-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -248,7 +247,7 @@
         <button class="fav-header-btn" onclick="openFavoritesModal()">❤️</button>
     </header>
 
-    <div class="view-container">
+    <div class="view-container" id="main-view-container">
 
         <div id="menu-view" class="view active">
             <div class="cats-wrapper" id="cats-container" style="margin: -15px -15px 15px -15px;"></div>
@@ -261,8 +260,8 @@
                 <div class="asb-cats" id="asb-cats"></div>
             </div>
             
-            <div id="products-list" class="products-grid">
-                </div>
+            <div id="products-list" class="products-grid"></div>
+            <!-- Pagination tugmalari shu yerga qo'shiladi -->
         </div>
 
         <div id="cart-view" class="view">
@@ -301,6 +300,8 @@
         <div class="nav-item" onclick="switchTab('profile', this)"><div class="icon">👤</div><b>Profil</b></div>
     </nav>
 
+    <!-- QOLGAN BARCHA MODALLAR SHU YERDA QOLADI... -->
+    
     <div id="favorites-modal" class="full-modal" style="z-index: 2005;">
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('favorites-modal')">←</button>
@@ -376,7 +377,7 @@
             <div class="seller-contact-card">
                 <div class="sc-icon">🛍</div>
                 <h2>O&F Shop</h2>
-                <div class="seller-info-row" id="sc-phone-row" style="display:none;" onclick="if(sellerContact.phone) window.location.href='tel:'+sellerContact.phone.replace(/\\s/g,'')">
+                <div class="seller-info-row" id="sc-phone-row" style="display:none;" onclick="if(sellerContact.phone) window.location.href='tel:'+sellerContact.phone.replace(/\s/g,'')">
                     <div class="si-icon">📞</div>
                     <div>
                         <div class="si-label">Telefon raqam</div>
@@ -401,7 +402,7 @@
 
             <div class="dev-card" id="dev-card-section" style="display:none;">
                 <h3>🤖 Bot Yaratuvchisi</h3>
-                <div class="seller-info-row dev-info-row" id="dev-phone-row" style="display:none;" onclick="if(sellerContact.devPhone) window.location.href='tel:'+sellerContact.devPhone.replace(/\\s/g,'')">
+                <div class="seller-info-row dev-info-row" id="dev-phone-row" style="display:none;" onclick="if(sellerContact.devPhone) window.location.href='tel:'+sellerContact.devPhone.replace(/\s/g,'')">
                     <div class="si-icon">📱</div>
                     <div>
                         <div class="si-label" style="color:#ddd;">Telefon raqam</div>
@@ -423,12 +424,12 @@
                     </div>
                 </div>
             </div>
-
             <p style="text-align:center; color:var(--gray); font-size:14px; margin-top:20px;">Savol va takliflar uchun biz bilan bog'laning.</p>
         </div>
     </div>
 
     <div id="admin-panel-modal" class="full-modal">
+        <!-- MAHSULOTLAR RO'YXATI MODALLARI (Asl kod bilan bir xil, o'zgarishsiz qoldiriladi) -->
         <div class="modal-header">
             <button class="back-btn" onclick="closeModal('admin-panel-modal')">←</button>
             <span>Boshqaruv Paneli</span>
@@ -443,6 +444,7 @@
                 <div class="admin-card" style="text-align:center; cursor:pointer;" onclick="openAdminView('admin-settings')">⚙️ Sozlamalar</div>
             </div>
 
+            <!-- QOLGAN ADMIN PANELLARI ... (Umumiy sozlamalar, Buyurtmalar, Mahsulotlar) -->
             <div id="admin-settings" class="admin-section" style="display:none;">
                 <h3 style="margin-top:0;">Umumiy Sozlamalar</h3>
 
@@ -544,9 +546,7 @@
                         Bir nechta kod kiritmoqchi bo'lsangiz, har birini yangi qatorga yozing.
                     </div>
 
-                    <textarea id="import-codes" class="input-style" placeholder="010501-035714
-010502-00038
-010503-00126"></textarea>
+                    <textarea id="import-codes" class="input-style" placeholder="010501-035714&#10;010502-00038"></textarea>
 
                     <button id="btn-fetch-codes" class="main-btn" onclick="fetchByCode()" style="margin-top:8px;">🔍 Yuklab olish</button>
 
@@ -574,7 +574,6 @@
                 </div>
                 <div id="admin-users-list"></div>
             </div>
-
         </div>
     </div>
 
@@ -591,7 +590,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, setDoc, getDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // QO'SHILDI: getDocs o'qib olish uchun
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, setDoc, getDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC7-Ucmh7BbdhabJ4sJ-xxvCwMabsHqSBY",
@@ -613,7 +613,12 @@
 
         let products         = [];
         let filteredProducts = [];
-        let isProductsLoaded = false; // MUHIM: Yuklanish tugaganini tekshirish uchun bayroq
+        let isProductsLoaded = false; 
+        
+        // --- PAGINATION O'ZGARUVCHILARI ---
+        let currentPage = 1;
+        const itemsPerPage = 50;
+
         let cart             = {};
         let favorites        = [];
         let myOrders         = [];
@@ -737,19 +742,53 @@
             if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminCategories();
         });
 
-        onSnapshot(collection(db, "products"), (snap) => {
-            products = [];
-            snap.forEach(d => products.push({ id: d.id, ...d.data() }));
+        // ────────────────────────────────────────────────────────────────────────
+        // QO'SHILDI: MAHSULOTLARNI KESHLASH VA O'QISH TIZIMI
+        // Bu funksiya Firestore "Reads" limitlarini 99% gacha tejaydi!
+        // ────────────────────────────────────────────────────────────────────────
+        window.loadProductsData = async (forceReload = false) => {
+            const cacheKey = "faberlic_products_cache";
+            const cacheTime = "faberlic_products_time";
+            const now = Date.now();
+            const cacheValidMs = 12 * 60 * 60 * 1000; // Kesh 12 soat saqlanadi
             
-            // Faqat rostakamiga mahsulot tushgandagina "yuklandi" deb hisoblaymiz
-            if (products.length > 0) {
-                isProductsLoaded = true; 
+            try {
+                if (!forceReload) {
+                    const cached = localStorage.getItem(cacheKey);
+                    const time = localStorage.getItem(cacheTime);
+                    if (cached && time && (now - Number(time) < cacheValidMs)) {
+                        products = JSON.parse(cached);
+                        isProductsLoaded = true;
+                        applyFilters();
+                        if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminProducts();
+                        return; // Keshdan yuklandi, Firestore o'qilmaydi (0 ta Read)
+                    }
+                }
+            } catch(e) { console.warn("Keshni o'qishda xatolik:", e); }
+            
+            // Kesh yo'q yoki eskirgan bo'lsa, to'g'ridan-to'g'ri o'qiymiz
+            try {
+                const snap = await getDocs(collection(db, "products"));
+                products = [];
+                snap.forEach(d => products.push({ id: d.id, ...d.data() }));
+                
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify(products));
+                    localStorage.setItem(cacheTime, now.toString());
+                } catch(e) { console.warn("Keshga yozishda xatolik (xotira to'lgan bo'lishi mumkin):", e); }
+                
+                isProductsLoaded = true;
+                applyFilters();
+                if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminProducts();
+            } catch (error) {
+                console.error("Firestore dan mahsulotlarni yuklashda xatolik:", error);
+                tg.showAlert("Mahsulotlarni yuklashda xatolik yuz berdi. Iltimos qayta urining.");
             }
-            
-            applyFilters();
-            if (document.getElementById('favorites-modal').style.display === 'block') renderFavorites();
-            if (document.getElementById('admin-panel-modal').style.display === 'block') renderAdminProducts();
-        });
+        };
+
+        // Ilovani yuklashda mahsulotlarni olishni boshlaymiz
+        loadProductsData();
+
 
         onSnapshot(query(collection(db, "orders"), orderBy("date", "desc")), (snap) => {
             allOrders = [];
@@ -850,6 +889,9 @@
                     return matchCat && matchSearch;
                 })
                 .sort((a, b) => Number(a.price) - Number(b.price));
+                
+            // O'ZGARISH: Har safar filtr yoki kategoriya o'zgarganda 1-sahifaga qaytamiz
+            currentPage = 1; 
             renderMenu();
         }
 
@@ -930,14 +972,28 @@
             </div>`;
         }
 
+        // --- PAGINATION CONTROL FUNKSIYALARI ---
+        window.nextPage = () => {
+            if (currentPage * itemsPerPage < filteredProducts.length) {
+                currentPage++;
+                renderMenu();
+                document.getElementById('main-view-container').scrollTo(0, 0); // Yuqoriga qaytish
+            }
+        };
+
+        window.prevPage = () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderMenu();
+                document.getElementById('main-view-container').scrollTo(0, 0); // Yuqoriga qaytish
+            }
+        };
+
         window.renderMenu = () => {
             const list = document.getElementById('products-list');
 
-            // MAHSULOTLAR YUKLANMAGAN BO'LSA DOIM SKELETON KO'RSATISH (BO'SH XABAR CHIQMAYDI)
             if (!isProductsLoaded) {
                 list.innerHTML = `
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
-                    <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
                     <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
                     <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
                     <div class="skeleton-card"><div class="skeleton-box skel-img"></div><div class="skeleton-box skel-text title"></div><div class="skeleton-box skel-text title-short"></div><div class="skeleton-box skel-text price"></div><div class="skeleton-box skel-btn"></div></div>
@@ -946,14 +1002,31 @@
                 return;
             }
 
-            // AGAR FILTRDAN KEYIN HAM HECH NARSA QOLMASA, UMUMAN HECH NARSA CHIQARMAYMIZ
             if (filteredProducts.length === 0) {
                 list.innerHTML = ""; 
                 updateBadge();
                 return;
             }
 
-            list.innerHTML = filteredProducts.map(p => getProductCardHTML(p, selectionMode)).join('');
+            // --- SAHIFALASH (PAGINATION) MANTIQIY QISMI ---
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentItems = filteredProducts.slice(startIndex, endIndex); // Faqat 50 tasini kesib olamiz
+
+            let html = currentItems.map(p => getProductCardHTML(p, selectionMode)).join('');
+
+            // --- AVVALGI / KEYINGI TUGMALARI ---
+            const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+            if (totalPages > 1) {
+                html += `
+                <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 20px; padding: 15px; background: white; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                    <button onclick="prevPage()" ${currentPage === 1 ? 'disabled style="background:#e0e0e0; color:#888;"' : ''} class="main-btn" style="width: 45%; padding: 12px; margin: 0; font-size:15px;">⬅️ Avvalgi</button>
+                    <span style="font-weight: 800; color: var(--brand); font-size:16px;">${currentPage} / ${totalPages}</span>
+                    <button onclick="nextPage()" ${currentPage === totalPages ? 'disabled style="background:#e0e0e0; color:#888;"' : ''} class="main-btn" style="width: 45%; padding: 12px; margin: 0; font-size:15px;">Keyingi ➡️</button>
+                </div>`;
+            }
+
+            list.innerHTML = html;
 
             if (isAdmin && !selectionMode) {
                 list.querySelectorAll('.product-card').forEach(card => {
@@ -1044,6 +1117,7 @@
             await Promise.all(updates);
             tg.showAlert(`✅ ${ids.length} ta mahsulot "${cat}" kategoriyasiga qo'shildi!`);
             exitSelectionMode();
+            await loadProductsData(true); // O'ZGARISH: Keshni yangilaymiz
         };
 
         window.renderCart = () => {
@@ -1176,7 +1250,7 @@
                 btn.innerText = "⏳ Aniqlanmoqda..."; btn.disabled = true;
                 navigator.geolocation.getCurrentPosition(
                     (pos) => {
-                        let link = `https://maps.google.com/?q=$${pos.coords.latitude},${pos.coords.longitude}`;
+                        let link = `http://googleusercontent.com/maps.google.com/?q=${pos.coords.latitude},${pos.coords.longitude}`;
                         let el   = document.getElementById('checkout-address');
                         el.value = (el.value ? el.value + "\n" : "") + "📍 GPS: " + link;
                         btn.innerText = "📍 Joylashuvni aniqlash"; btn.disabled = false;
@@ -1219,7 +1293,6 @@
                 let orderNum   = Math.floor(10000 + Math.random() * 90000);
                 let orderObj   = { orderNum, userId, userName, phone: userData.phone, address, items, total, feePercent, feeAmount, subtotal, date: Date.now(), hideForUser: false, status: "pending" };
                 
-                // BAZAGA YOZAMIZ VA ID'SINI OLAMIZ
                 let docRef = await addDoc(collection(db, "orders"), orderObj);
                 
                 for (let item of items) {
@@ -1230,7 +1303,6 @@
                     }
                 }
                 
-                // BOTGA MA'LUMOT YUBORISHDA ID HAM QO'SHILDI
                 tg.sendData(JSON.stringify({ action: "new_order", id: docRef.id, ...orderObj }));
                 
                 cart = {}; renderMenu(); renderCart(); closeModal('checkout-modal');
@@ -1597,6 +1669,7 @@
                 }
                 tg.showAlert("O'chirildi!");
                 exitAdminListSelectionMode();
+                await loadProductsData(true); // O'ZGARISH: Keshni yangilaymiz
             });
         };
 
@@ -1614,6 +1687,7 @@
             tg.showAlert(`✅ ${ids.length} ta mahsulot "${cat}" kategoriyasiga qo'shildi!`);
             document.getElementById('admin-sel-cats').style.display = 'none';
             exitAdminListSelectionMode();
+            await loadProductsData(true); // O'ZGARISH: Keshni yangilaymiz
         };
 
         function renderAdminProducts() {
@@ -1709,6 +1783,7 @@
             if (id) await updateDoc(doc(db, "products", id), data);
             else    await addDoc(collection(db, "products"), data);
             tg.showAlert("✅ Saqlandi!"); resetAdminForm(); openAdminView('admin-prods');
+            await loadProductsData(true); // O'ZGARISH: Keshni yangilaymiz
         };
 
         window.editProduct = (id) => {
@@ -1757,7 +1832,9 @@
 
         window.askDelete = (id) => {
             askConfirm("O'chirish", "Haqiqatan ham o'chirasizmi?", async () => {
-                await deleteDoc(doc(db, "products", id)); tg.showAlert("O'chirildi!");
+                await deleteDoc(doc(db, "products", id)); 
+                tg.showAlert("O'chirildi!");
+                await loadProductsData(true); // O'ZGARISH: Keshni yangilaymiz
             });
         };
 
@@ -1999,6 +2076,8 @@
             document.getElementById('import-codes').value  = '';
             document.getElementById('import-results').innerHTML = '';
             tg.showAlert(`✅ ${saved} ta mahsulot muvaffaqiyatli saqlandi!\n\nKategoriya belgilash uchun mahsulot ustiga uzoq bosing.`);
+            
+            await loadProductsData(true); // O'ZGARISH: Keshni yangilaymiz
         };
 
         window.openProductModal = (id) => {
